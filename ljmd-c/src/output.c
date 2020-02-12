@@ -3,7 +3,7 @@
 #include "data.h"
 
 /* append data to output. */
-static void output(mdsys_t *sys, FILE *erg, FILE *traj)
+void output(mdsys_t *sys, FILE *erg, FILE *traj)
 {
     int i;
     
