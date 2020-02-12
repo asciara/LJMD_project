@@ -21,7 +21,7 @@ void velverlet_first(mdsys_t *sys)
 
 
 /* velocity verlet second part */
- void velverlet_second(mdsys_t *sys)
+void velverlet_second(mdsys_t *sys)
 {
     int i;
 

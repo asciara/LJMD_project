@@ -2,6 +2,9 @@
 #include <ctype.h> // isspace
 #include <string.h> //strcpy,strlen,strchr?
 
+#include "prototypes.h"
+#include "data.h"
+
 /* helper function: read a line and then return
    the first string with whitespace stripped off */
 int get_a_line(FILE *fp, char *buf)
@@ -32,7 +35,7 @@ int get_a_line(FILE *fp, char *buf)
 }
  
 /* helper function: zero out an array */
- void azzero(double *d, const int n)
+void azzero(double *d, const int n)
 {
     int i;
     for (i=0; i<n; ++i) {
@@ -41,7 +44,7 @@ int get_a_line(FILE *fp, char *buf)
 }
 
 /* helper function: apply minimum image convention */
- double pbc(double x, const double boxby2)
+double pbc(double x, const double boxby2)
 {
     while (x >  boxby2) x -= 2.0*boxby2;
     while (x < -boxby2) x += 2.0*boxby2;
