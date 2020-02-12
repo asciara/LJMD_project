@@ -3,7 +3,7 @@
 
 
 /* velocity verlet first part */
-static void velverlet_first(mdsys_t *sys)
+void velverlet_first(mdsys_t *sys)
 {
     int i;
 
@@ -21,7 +21,7 @@ static void velverlet_first(mdsys_t *sys)
 
 
 /* velocity verlet second part */
-static void velverlet_second(mdsys_t *sys)
+void velverlet_second(mdsys_t *sys)
 {
     int i;
 
@@ -36,7 +36,7 @@ static void velverlet_second(mdsys_t *sys)
 
 
 /* velocity verlet */
-static void velverlet(mdsys_t *sys)
+void velverlet(mdsys_t *sys)
 {
     int i;
 
