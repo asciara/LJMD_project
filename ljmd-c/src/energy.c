@@ -1,5 +1,5 @@
-#include <data.h>
-#include <prototypes.h>
+#include <"data.h">
+#include <"prototypes.h">
 
 
 /* compute kinetic energy */
