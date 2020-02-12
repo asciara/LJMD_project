@@ -14,18 +14,18 @@ SRC=main.c \
     force.c \
 
 IPATH=../include/
-VPATH=.
+VPATH=../src
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x
 
-default: main.x
+default: ../$(EXE)
 
 clean:
-	rm -f *.mod *.o main.x
+	rm -f *.mod *.o ../main.x
 
 # linker rule
-$(EXE): $(OBJ)
+../$(EXE): $(OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
 # compilation pattern rule for objects
