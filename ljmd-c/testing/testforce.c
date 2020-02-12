@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "data.h"
-#include "utility.h"
+#include "prototypes.h"
 #include <math.h>
 
 int main(int argc, char **argv) {
