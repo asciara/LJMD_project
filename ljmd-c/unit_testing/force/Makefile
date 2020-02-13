@@ -30,4 +30,4 @@ $(EXE): $(OBJ)
 %.o: $(IPATH)%.h
 
 check: $(EXE) 
-	./$(EXE) < argon_3.inp
+	./$(EXE) 
