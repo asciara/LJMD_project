@@ -22,6 +22,7 @@ void force(mdsys_t *sys)
     MPI_Bcast(sys->rz,sys->natoms,MPI_DOUBLE,0,sys->mpicomm);
 
     for(i=sys->mpirank; i < sys->natoms-1; i+=sys->nsize) {
+	
         for(j=i+1; j < (sys->natoms); ++j) {
 
             /* get distance between particle i and j */
