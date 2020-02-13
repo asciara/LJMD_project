@@ -2,6 +2,7 @@ import sys
 from utilities import *
 import data
 from ctypes import *
+from output import *
 
 def create_system(input_contents):
    S=data.mdsys_t()
@@ -22,6 +23,19 @@ def create_system(input_contents):
           elif(count==11): nprint    = int(value)
    return S,restfile,trajfile,ergfile,nprint
 
+#******************************************************************************
+
+# TEST (to be later removed)
+
+print("BLEN = ", BLEN)
+print("kboltz = ", kboltz)
+print("mvsq2e = ", mvsq2e)
+
+#******************************************************************************
+
+# MAIN
+
+# read input file
 
 #system,restfile,trajfile,ergfile,nprint=create_system(sys.stdin)
 
@@ -29,27 +43,76 @@ f = open("../examples/argon_108.inp", "r")
 system,restfile,trajfile,ergfile,nprint=create_system(f) 
 f.close()
 
+# allocate memory
+
+system.rx = (c_double * system.natoms)()
+system.ry = (c_double * system.natoms)()
+system.rz = (c_double * system.natoms)()
+system.vx = (c_double * system.natoms)()
+system.vy = (c_double * system.natoms)()
+system.vz = (c_double * system.natoms)()
+system.fx = (c_double * system.natoms)()
+system.fy = (c_double * system.natoms)()
+system.fz = (c_double * system.natoms)()
+
+# read restart
+
+fp = open("../examples/" + restfile, "r")
+
+for i in range(system.natoms):
+    rx, ry, rz = fp.readline().split()
+    system.rx[i] = c_double(float(rx))
+    system.ry[i] = c_double(float(ry))
+    system.rz[i] = c_double(float(rz))
+    vx, vy, vz = fp.readline().split()
+    system.vx[i] = c_double(float(vx))
+    system.vy[i] = c_double(float(vy))
+    system.vz[i] = c_double(float(vz))
+
+fp.close()
+
+# initialize forces and energies
+
+system.nfi = 0
+
 fso = CDLL("../Obj-new/libforce.so" )
 fso.force.argtypes =[POINTER(data.mdsys_t)] #Structure
 
 eso = CDLL("../Obj-new/libenergy.so" )
 eso.ekin.argtypes =[POINTER(data.mdsys_t)] #Structure
 
-
 #fso.force(system)
 #eso.ekin(system)
 
+erg = open(restfile, "w")
+traj = open(trajfile, "w")
 
-##################################################
-# main MD loop */
-#for sys.nfi in range(1, sys.nsteps+1):
-#
-#    # write output, if requested 
-#    if ((sys.nfi % nprint) == 0):
-#        output(system, erg, traj)
-#
-#    # propagate system and recompute energies 
+print("Starting simulation with %d atoms for %d steps.\n" % (system.natoms, system.nsteps));
+print("     NFI            TEMP            EKIN                 EPOT              ETOT\n");
+
+output(system, erg, traj)
+
+#**************************************************
+
+# main MD loop 
+
+#for system.nfi in range(1, system.nsteps + 1):
+
+    # write output, if requested 
+#    if ((system.nfi % nprint) == 0)
+#        output(system, erg, traj);
+
+    # propagate system and recompute energies 
 #    vso.velverlet(system);
 #    eso.ekin(system)
-#
-##################################################
+
+#**************************************************
+
+# clean up: close files
+    
+print("Simulation Done.");
+
+erg.close()
+traj.close()
+
+#******************************************************************************
