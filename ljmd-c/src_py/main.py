@@ -29,6 +29,6 @@ f = open("../examples/argon_108.inp", "r")
 system,restfile,trajfile,ergfile,nprint=create_system(f) 
 f.close()
 
-force_so = CDLL("../Obj-new/libforce.so")
-force_so.force.argtypes =[POINTER(mdsys_t)] #Structure
+force_so = CDLL("../Obj-new/libforce.so" )
+force_so.force.argtypes =[POINTER(data.mdsys_t)] #Structure
 force_so.force(system)
