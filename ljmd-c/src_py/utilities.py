@@ -11,14 +11,14 @@ def pbc(x,boxby2):
 
 # helper function: read a line and then return
 # the first string with whitespace stripped off 
-def get_a_line(line,string):
+def get_a_line(line):
      stripped = line.strip()
      if not stripped:
-        return -1
-     string= line.split()[0]
-     if(string=='' or "#" in string):
+        return (-1,val)
+     val = line.split()[0]
+     if(val=='' or "#" in val):
         print "problem reading input"
-        return -1
+        return (-1,val)
      else:
-        return 0
+        return (0,val)
 
