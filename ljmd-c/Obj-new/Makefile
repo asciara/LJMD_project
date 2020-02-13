@@ -7,11 +7,11 @@ LIBCOMPIL_FLAGS  = -shared
 
 # list of source files
 SRC=main.c \
+    data.c \
     energy.c \
     utilities.c \
     output.c \
     velverlet.c \
-    data.c \
     force.c \
 
 IPATH=../include/
@@ -37,9 +37,13 @@ force.o: force.c  utilities.c
 	$(CC) -c $(CFLAGS) $< -I $(IPATH)
 	$(CC) $(LIBCOMPIL_FLAGS)  utilities.o force.o -o libforce.so 
 
+energy.o: energy.c  data.c
+	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) $(LIBCOMPIL_FLAGS) data.o energy.o -o libenergy.so 
+
 velverlet.o: velverlet.c data.c utilities.c
-	$(CC)  -fPIC -c $(CFLAGS) $< -I $(IPATH)
-	$(CC) -fPIC $(LIBCOMPIL_FLAGS) velverlet.o -o libvelverlet.so 
+	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
+	$(CC)  $(LIBCOMPIL_FLAGS) velverlet.o -o libvelverlet.so 
 
 # dependencies
 %.o: $(IPATH)%.h
