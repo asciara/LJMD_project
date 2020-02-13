@@ -5,21 +5,15 @@ CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
 LDLIBS=-lm
 
 # list of source files
-SRC=main.c \
-    energy.c \
-    utilities.c \
-    output.c \
-    velverlet.c \
-    data.c \
-    force.c \
+SRC=testforce.c utilities.c force.c
 
-IPATH=../include/
-VPATH=.
+IPATH=../../include/
+VPATH=../../src
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x
 
-default: main.x
+default: $(EXE)
 
 clean:
 	rm -f *.mod *.o main.x
@@ -34,3 +28,6 @@ $(EXE): $(OBJ)
 
 # dependencies
 %.o: $(IPATH)%.h
+
+check: $(EXE) 
+	./$(EXE) < argon_3.inp
