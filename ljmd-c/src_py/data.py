@@ -13,7 +13,9 @@ mvsq2e = 2390.05736153349
 
 # structure to hold the complete information about the MD system 
 
-class _mdsys(Structure):
+c_double_p = POINTER(c_double)
+
+class mdsys_t(Structure):
     _fields_ = [
         ("natoms", c_int),
         ("nfi", c_int),
