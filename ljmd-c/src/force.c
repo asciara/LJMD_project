@@ -16,6 +16,11 @@ void force(mdsys_t *sys)
     azzero(sys->fy,sys->natoms);
     azzero(sys->fz,sys->natoms);
 
+    azzero(sys->cx,sys->natoms);
+    azzero(sys->cy,sys->natoms);
+    azzero(sys->cz,sys->natoms);
+
+    MPI_Broadcast(sys->rx,sys->natoms,MPI_DOUBLE,0,sys->mpicomm)
     for(i=sys->nsize*sys->mpirank; i < (sys->natoms); ++i) {
         for(j=0; j < (sys->natoms); ++j) {
 

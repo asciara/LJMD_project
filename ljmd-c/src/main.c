@@ -45,11 +45,11 @@ int main(int argc, char **argv)
     if(get_a_line(stdin,line)) return 1;
     nprint=atoi(line);
 
-    MPI_Comm comm=MPI_COMM_WORLD;
+    sys.comm=MPI_COMM_WORLD;
 
     MPI_Init(&argc,&argv);
     MPI_Comm_rank(comm,&sys.mpirank);
-    MPI_Comm_size(comm,&nprocs);
+    MPI_Comm_size(comm,&sys.nprocs);
     
     /* allocate memory */
     sys.rx=(double *)malloc(sys.natoms*sizeof(double));
