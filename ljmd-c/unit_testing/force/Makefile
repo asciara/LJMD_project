@@ -1,14 +1,14 @@
 #-*- Makefile -*-
 SHELL=/bin/sh
-CC=gcc
+CC=mpicc
 CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
 LDLIBS=-lm
 
 # list of source files
-SRC=testforce.c utilities.c force.c
+SRC=testforce_mpi.c utilities.c force_mpi.c
 
 IPATH=../../include/
-VPATH=../../src
+VPATH=../../src/mpi ../../src
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x

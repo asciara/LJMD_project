@@ -10,7 +10,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
-
 #include "data.h"
 #include "prototypes.h"
 
@@ -50,7 +49,9 @@ int main(int argc, char **argv)
     MPI_Init(&argc,&argv);
     MPI_Comm_rank(comm,&sys.mpirank);
     MPI_Comm_size(comm,&sys.nprocs);
-    
+   
+    sys.nsize=sys.natoms/sys.nprocs;
+ 
     /* allocate memory */
     sys.rx=(double *)malloc(sys.natoms*sizeof(double));
     sys.ry=(double *)malloc(sys.natoms*sizeof(double));
