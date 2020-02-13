@@ -3,6 +3,7 @@ SHELL=/bin/sh
 CC=gcc
 CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
 LDLIBS=-lm
+LIBCOMPIL_FLAGS  = -shared
 
 # list of source files
 SRC=main.c \
@@ -31,6 +32,14 @@ clean:
 # compilation pattern rule for objects
 %.o: %.c 
 	$(CC) -c $(CFLAGS) $< -I $(IPATH)
+
+force.o: force.c 
+	$(CC) -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) $(LIBCOMPIL_FLAGS) force.o -o libforce.so 
+
+velverlet.o: velverlet.c data.c 
+	$(CC)  -fPIC -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) -fPIC $(LIBCOMPIL_FLAGS) velverlet.o -o libvelverlet.so 
 
 # dependencies
 %.o: $(IPATH)%.h
