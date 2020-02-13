@@ -16,7 +16,7 @@ def get_a_line(line,string):
      if not stripped:
         return -1
      string= line.split()[0]
-     if(string==''):
+     if(string=='' or "#" in string):
         print "problem reading input"
         return -1
      else:
