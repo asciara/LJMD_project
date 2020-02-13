@@ -2,9 +2,9 @@ import sys
 from utilities import *
 import data
 
-def create_from_stdin():
+def create_system(input_contents):
    S=data.mdsys_t()
-   for count,line in enumerate(sys.stdin):
+   for count,line in enumerate(input_contents):
        (R,value)=get_a_line(line)
        if(R==0):
           if(  count== 0): S.natoms  = int(value)
@@ -20,7 +20,14 @@ def create_from_stdin():
           elif(count==10): S.dt      = float(value)
           elif(count==11): nprint    = int(value)
    return S,restfile,trajfile,ergfile,nprint
-system,restfile,trajfile,ergfile,nprint=create_from_stdin()
+
+
+#system,restfile,trajfile,ergfile,nprint=create_system(sys.stdin)
+
+f = open("../examples/argon_108.inp", "r")
+system,restfile,trajfile,ergfile,nprint=create_system(f) 
+f.close()
+
 print system.epsilon
 print system.natoms  
 print system.nfi     
