@@ -40,3 +40,16 @@ eso.ekin.argtypes =[POINTER(data.mdsys_t)] #Structure
 #eso.ekin(system)
 
 
+##################################################
+# main MD loop */
+#for sys.nfi in range(1, sys.nsteps+1):
+#
+#    # write output, if requested 
+#    if ((sys.nfi % nprint) == 0):
+#        output(system, erg, traj)
+#
+#    # propagate system and recompute energies 
+#    vso.velverlet(system);
+#    eso.ekin(system)
+#
+##################################################
