@@ -33,11 +33,11 @@ clean:
 %.o: %.c 
 	$(CC) -c $(CFLAGS) $< -I $(IPATH)
 
-force.o: force.c 
+force.o: force.c  utilities.c
 	$(CC) -c $(CFLAGS) $< -I $(IPATH)
-	$(CC) $(LIBCOMPIL_FLAGS) force.o -o libforce.so 
+	$(CC) $(LIBCOMPIL_FLAGS)  utilities.o force.o -o libforce.so 
 
-velverlet.o: velverlet.c data.c 
+velverlet.o: velverlet.c data.c utilities.c
 	$(CC)  -fPIC -c $(CFLAGS) $< -I $(IPATH)
 	$(CC) -fPIC $(LIBCOMPIL_FLAGS) velverlet.o -o libvelverlet.so 
 
