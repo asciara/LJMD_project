@@ -19,7 +19,7 @@ struct _mdsys {
     double *fx, *fy, *fz;
     /*MPI data*/
     double *cx, *cy, *cz;
-    MPI_comm comm;
+    MPI_Comm mpicomm;
     int nprocs;
     int mpirank;
     int nsize;

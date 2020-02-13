@@ -44,11 +44,11 @@ int main(int argc, char **argv)
     if(get_a_line(stdin,line)) return 1;
     nprint=atoi(line);
 
-    sys.comm=MPI_COMM_WORLD;
+    sys.mpicomm=MPI_COMM_WORLD;
 
     MPI_Init(&argc,&argv);
-    MPI_Comm_rank(comm,&sys.mpirank);
-    MPI_Comm_size(comm,&sys.nprocs);
+    MPI_Comm_rank(sys.mpicomm,&sys.mpirank);
+    MPI_Comm_size(sys.mpicomm,&sys.nprocs);
    
     sys.nsize=sys.natoms/sys.nprocs;
  
