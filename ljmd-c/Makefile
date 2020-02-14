@@ -29,5 +29,5 @@ clean:
 	$(MAKE) $(MFLAGS) -C unit_testing/utilities clean
 
 
-check: serial
+check: new
 	$(MAKE) $(MFLAGS) -C examples check
