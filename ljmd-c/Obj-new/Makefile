@@ -43,7 +43,7 @@ energy.o: energy.c  data.c
 
 velverlet.o: velverlet.c data.c utilities.c
 	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
-	$(CC)  $(LIBCOMPIL_FLAGS) velverlet.o -o libvelverlet.so 
+	$(CC)  $(LIBCOMPIL_FLAGS) velverlet.o data.o utilities.o -o libvelverlet.so 
 
 # dependencies
 %.o: $(IPATH)%.h
