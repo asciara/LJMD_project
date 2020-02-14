@@ -1,16 +1,15 @@
 #!/bin/bash
 
 no_opt="-Wall -pg -no-pie"
-O2="-Wall -pg -no-pie -O2"
-O3="-Wall -pg -no-pie -O3"
-fast_math="-Wall -pg -no-pie -O3 -ffast-math"
-expensive_opt="-Wall -pg -no-pie -O3 -ffast-math -fexpensive-optimizations" 
-msse="-Wall -pg -no-pie -O3 -ffast-math -fexpensive-optimizations -msse3"
+O2="-Wall -O2 -pg -no-pie"
+O3="-Wall -O3 -pg -no-pie"
+fast_math="-Wall -O3 -ffast-math -pg -no-pie"
+expensive_opt="-Wall -O3 -ffast-math -fexpensive-optimizations -pg -no-pie" 
 
 
-opt=( "$no_opt" "${O2}" "${O3}" "${fast_math}" "${expensive_opt}" "${msse}")
+opt=( "$no_opt" "${O2}" "${O3}" "${fast_math}" "${expensive_opt}" )
 #opt=( "$msse" )
-names=('no_opt' 'O2' 'O3' 'fast_math' 'expensive_opt' 'msse')
+names=('no_opt' 'O2' 'O3' 'fast_math' 'expensive_opt' )
 #names=( 'msse' )
 
 head -10 ../reference/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$1,$2,$3,$4);}'> ref.dat
@@ -21,7 +20,7 @@ do
   name=${names[$idx]}
   make -B CFLAGS="${opt[idx]}" EXE="$name.x"
   
-  /usr/bin/time ./${name}.x < argon_108.inp #2>${name}.time
+  ./${name}.x < argon_108.inp 
   
   gprof ./${name}.x gmon.out > ${name}_analysis.txt
  
