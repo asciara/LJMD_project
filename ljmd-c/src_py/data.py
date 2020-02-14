@@ -1,4 +1,7 @@
 from ctypes import *
+import sys
+from utilities import get_a_line
+
 
 # generic file- or pathname buffer length 
 
@@ -39,6 +42,7 @@ class mdsys_t(Structure):
         ("fy", c_double_p),
         ("fz", c_double_p)
     ]
+           
 
 #struct _mdsys {
 #    int natoms,nfi,nsteps;

@@ -81,8 +81,11 @@ fso.force.argtypes =[POINTER(data.mdsys_t)] #Structure
 eso = CDLL("../Obj-new/libenergy.so" )
 eso.ekin.argtypes =[POINTER(data.mdsys_t)] #Structure
 
-#fso.force(system)
-#eso.ekin(system)
+#vso = CDLL("../Obj-new/libvelverlet.so" )
+#vso.velverlet.argtypes =[POINTER(data.mdsys_t)] #Structure
+
+fso.force(system)
+eso.ekin(system)
 
 erg = open(restfile, "w")
 traj = open(trajfile, "w")
@@ -96,15 +99,15 @@ output(system, erg, traj)
 
 # main MD loop 
 
-#for system.nfi in range(1, system.nsteps + 1):
+for system.nfi in range(1, system.nsteps + 1):
 
     # write output, if requested 
-#    if ((system.nfi % nprint) == 0)
-#        output(system, erg, traj);
+    if ((system.nfi % nprint) == 0):
+        output(system, erg, traj);
 
     # propagate system and recompute energies 
-#    vso.velverlet(system);
-#    eso.ekin(system)
+    #vso.velverlet(system);
+    eso.ekin(system)
 
 #**************************************************
 
