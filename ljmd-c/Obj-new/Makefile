@@ -33,9 +33,9 @@ clean:
 %.o: %.c 
 	$(CC) -c $(CFLAGS) $< -I $(IPATH)
 
-force.o: force.c  utilities.c
+force.o: force.c  data.c utilities.c
 	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
-	$(CC) $(LIBCOMPIL_FLAGS)  utilities.o force.o -o libforce.so 
+	$(CC) $(LIBCOMPIL_FLAGS) data.o utilities.o force.o -o libforce.so 
 
 energy.o: energy.c  data.c
 	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
