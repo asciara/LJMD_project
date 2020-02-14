@@ -22,7 +22,7 @@ EXE=main.x
 default: $(EXE)
 
 clean:
-	rm -f *.mod *.o *.x
+	rm -f *.mod *.o *.x *.txt *.times
 
 # linker rule
 $(EXE): $(OBJ)
