@@ -46,9 +46,9 @@ int main(int argc, char **argv) {
     }
 
 
-    sprintf(restfile,"argon_108.rest");
     /* read restart */
     if (sys.mpirank==0){
+        sprintf(restfile,"argon_108.rest");
     	fp=fopen(restfile,"r");
    	if(fp) {
         	for (i=0; i<sys.natoms; ++i) {
@@ -63,6 +63,8 @@ int main(int argc, char **argv) {
         	return 3;
     	}
     }
+
+    MPI_Barrier(sys.mpicomm);
     /* initialize forces and energies.*/
     	sys.nfi=0;
     	force(&sys);
