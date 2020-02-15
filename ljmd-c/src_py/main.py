@@ -82,8 +82,8 @@ fso.force.argtypes =[POINTER(data.mdsys_t)] #Structure
 eso = CDLL("../Obj-new/libenergy.so" )
 eso.ekin.argtypes =[POINTER(data.mdsys_t)] #Structure
 
-#vso = CDLL("../Obj-new/libvelverlet.so" )
-#vso.velverlet.argtypes =[POINTER(data.mdsys_t)] #Structure
+vso = CDLL("../Obj-new/libvelverlet.so" )
+vso.velverlet.argtypes =[POINTER(data.mdsys_t)] #Structure
 
 fso.force(system)
 eso.ekin(system)
@@ -107,7 +107,7 @@ for system.nfi in range(1, system.nsteps + 1):
         output(system, erg, traj);
 
     # propagate system and recompute energies 
-#    vso.velverlet(system);
+    vso.velverlet(system);
     eso.ekin(system)
 
 #**************************************************
