@@ -1,8 +1,9 @@
 import sys
-from utilities import *
-import data
 from ctypes import *
+import data
+from utilities import *
 from output import *
+from energy import *
 
 def create_system(input_contents):
    S=data.mdsys_t()
@@ -22,14 +23,6 @@ def create_system(input_contents):
           elif(count==10): S.dt      = c_double(float(value))
           elif(count==11): nprint    = int(value)
    return S,restfile,trajfile,ergfile,nprint
-
-#******************************************************************************
-
-# TEST (to be later removed)
-
-print("BLEN = ", BLEN)
-print("kboltz = ", kboltz)
-print("mvsq2e = ", mvsq2e)
 
 #******************************************************************************
 
@@ -79,14 +72,15 @@ system.nfi = 0
 fso = CDLL("../Obj-new/libforce.so" )
 fso.force.argtypes =[POINTER(data.mdsys_t)] #Structure
 
-eso = CDLL("../Obj-new/libenergy.so" )
-eso.ekin.argtypes =[POINTER(data.mdsys_t)] #Structure
+#eso = CDLL("../Obj-new/libenergy.so" )
+#eso.ekin.argtypes =[POINTER(data.mdsys_t)] #Structure
 
 vso = CDLL("../Obj-new/libvelverlet.so" )
 vso.velverlet.argtypes =[POINTER(data.mdsys_t)] #Structure
 
 fso.force(system)
-eso.ekin(system)
+#eso.ekin(system)
+ekin(system)
 
 erg = open(restfile, "w")
 traj = open(trajfile, "w")
@@ -108,8 +102,9 @@ for system.nfi in range(1, system.nsteps + 1):
 
     # propagate system and recompute energies 
     vso.velverlet(system);
-    eso.ekin(system)
-
+    #eso.ekin(system)
+    ekin(system)
+    
 #**************************************************
 
 # clean up: close files
