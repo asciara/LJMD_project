@@ -35,13 +35,6 @@ print("mvsq2e = ", mvsq2e)
 
 # MAIN
 
-# read input file
-
-#system,restfile,trajfile,ergfile,nprint=create_system(sys.stdin)
-
-#f = open("../examples/argon_108.inp", "r")
-#system,restfile,trajfile,ergfile,nprint=create_system(f) 
-#f.close()
 system=data.mdsys_t()
 
 system.natoms=3;             ## natoms
@@ -87,38 +80,16 @@ system.fx[2]=0.000000        ;
 system.fy[2]=0.000000        ;
 system.fz[2]=0.000000        ;
 
-#fso = CDLL("../Obj-new/libforce.so" )
-#fso.force.argtypes =[POINTER(data.mdsys_t)] #Structure
-
-#eso = CDLL("../Obj-new/libenergy.so" )
-#eso.ekin.argtypes =[POINTER(data.mdsys_t)] #Structure
-
-#vso = CDLL("../Obj-new/libvelverlet.so" )
-#vso.velverlet.argtypes =[POINTER(data.mdsys_t)] #Structure
-
-#fso.force(system)
-#eso.ekin(system)
-
-#erg = open(restfile, "w")
-#traj = open(trajfile, "w")
-
-print("Starting simulation with %d atoms for %d steps.\n" % (system.natoms, system.nsteps));
-print("     NFI            TEMP            EKIN                 EPOT              ETOT\n");
-
-#output(system, erg, traj)
-
  
 # main MD loop 
  
 for i in range(0,system.natoms):
-  #print("BEFORE : Forces on atom %d are: (%f,%f,%f)\n" % (i,system.fx[i],system.fy[i],system.fz[i]))
   print("BEFORE : Positions of atom %d : (%f,%f,%f)" % (i,system.rx[i],system.ry[i],system.rz[i]))
 for system.nfi in range(0, system.nsteps):
     velverlet.first(system)
     velverlet.second(system)
 for i in range(0,system.natoms):
   print("AFTER : Positions of atom %d: (%f,%f,%f)" % (i,system.rx[i],system.ry[i],system.rz[i]))
-  #print("AFTER : Forces on atom %d are: (%f,%f,%f)\n" % (i,system.fx[i],system.fy[i],system.fz[i]))
 #**************************************************
 
 # clean up: close files
