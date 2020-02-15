@@ -10,7 +10,6 @@ def first(SYST):
         SYST.rx[i] += SYST.dt*SYST.vx[i]
         SYST.ry[i] += SYST.dt*SYST.vy[i]
         SYST.rz[i] += SYST.dt*SYST.vz[i]
-    print "RX=",SYST.rx[0],"=",SYST.dt,"/ ",SYST.vx[0],"=",SYST.dt,"/ ( 0.5*",SYST.dt,"/",mvsq2e,"*",SYST.fx[0],"/",SYST.mass,")"
 
 # velocity verlet second part 
 def second(SYST):
@@ -19,7 +18,6 @@ def second(SYST):
         SYST.vx[i] += 0.5*SYST.dt / mvsq2e * SYST.fx[i] / SYST.mass
         SYST.vy[i] += 0.5*SYST.dt / mvsq2e * SYST.fy[i] / SYST.mass
         SYST.vz[i] += 0.5*SYST.dt / mvsq2e * SYST.fz[i] / SYST.mass
-    print "VX="," + 0.5*",SYST.dt,"/",mvsq2e,"*",SYST.fx[0],"/",SYST.mass
     
 
 
