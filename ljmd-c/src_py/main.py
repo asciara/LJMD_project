@@ -3,11 +3,8 @@ from ctypes import *
 import data
 from utilities import *
 from output import *
-<<<<<<< HEAD
 import velverlet
-=======
 from energy import *
->>>>>>> python
 
 def create_system(input_contents):
    S=data.mdsys_t()
