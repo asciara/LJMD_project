@@ -23,7 +23,7 @@ EXE=main.x
 default: ../$(EXE)
 
 clean:
-	rm -f *.mod *.o ../main.x
+	rm -f *.mod *.o *.so ../main.x
 
 # linker rule
 ../$(EXE): $(OBJ)
