@@ -3,7 +3,11 @@ from ctypes import *
 import data
 from utilities import *
 from output import *
+<<<<<<< HEAD
+import velverlet
+=======
 from energy import *
+>>>>>>> python
 
 def create_system(input_contents):
    S=data.mdsys_t()
@@ -75,8 +79,8 @@ fso.force.argtypes =[POINTER(data.mdsys_t)] #Structure
 #eso = CDLL("../Obj-new/libenergy.so" )
 #eso.ekin.argtypes =[POINTER(data.mdsys_t)] #Structure
 
-vso = CDLL("../Obj-new/libvelverlet.so" )
-vso.velverlet.argtypes =[POINTER(data.mdsys_t)] #Structure
+#vso = CDLL("../Obj-new/libvelverlet.so" )
+#vso.velverlet.argtypes =[POINTER(data.mdsys_t)] #Structure
 
 fso.force(system)
 #eso.ekin(system)
@@ -101,7 +105,10 @@ for system.nfi in range(1, system.nsteps + 1):
         output(system, erg, traj);
 
     # propagate system and recompute energies 
-    vso.velverlet(system);
+    #vso.velverlet(system);
+    velverlet.first(system)
+    fso.force(system)
+    velverlet.second(system)
     #eso.ekin(system)
     ekin(system)
     
