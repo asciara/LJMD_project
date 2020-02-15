@@ -3,6 +3,7 @@ from utilities import *
 import data
 from ctypes import *
 from output import *
+import velverlet
 
 def create_system(input_contents):
    S=data.mdsys_t()
@@ -107,6 +108,9 @@ for system.nfi in range(1, system.nsteps + 1):
 
     # propagate system and recompute energies 
     #vso.velverlet(system);
+    velverlet.first(system)
+    fso.force(system)
+    velverlet.second(system)
     eso.ekin(system)
 
 #**************************************************
