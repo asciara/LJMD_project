@@ -49,9 +49,9 @@ force.o: force.c  data.c utilities.c
 #	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
 #	$(CC) $(LIBCOMPIL_FLAGS) data.o energy.o -o libenergy.so 
 
-velverlet.o: velverlet.c data.c utilities.c force.c
-	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
-	$(CC) $(LIBCOMPIL_FLAGS) velverlet.o data.o utilities.o force.o -o libvelverlet.so
+#velverlet.o: velverlet.c data.c utilities.c force.c
+#	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
+#	$(CC) $(LIBCOMPIL_FLAGS) velverlet.o data.o utilities.o force.o -o libvelverlet.so
 
 # dependencies
 %.o: $(IPATH)%.h
