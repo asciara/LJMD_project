@@ -45,11 +45,6 @@ int main(int argc, char **argv)
     if(get_a_line(stdin,line)) return 1;
     nprint=atoi(line);
 
-    sys.comm=MPI_COMM_WORLD;
-
-    MPI_Init(&argc,&argv);
-    MPI_Comm_rank(comm,&sys.mpirank);
-    MPI_Comm_size(comm,&sys.nprocs);
     
     /* allocate memory */
     sys.rx=(double *)malloc(sys.natoms*sizeof(double));
@@ -59,15 +54,10 @@ int main(int argc, char **argv)
     sys.vy=(double *)malloc(sys.natoms*sizeof(double));
     sys.vz=(double *)malloc(sys.natoms*sizeof(double));
    
-    // Buffer for Broadcast
-    sys.cx=(double *)malloc(sys.natoms*sizeof(double));
-    sys.cy=(double *)malloc(sys.natoms*sizeof(double));
-    sys.cz=(double *)malloc(sys.natoms*sizeof(double));
-	if (sys.mpirank==0){
-    		sys.fx=(double *)malloc(sys.natoms*sizeof(double));
-    		sys.fy=(double *)malloc(sys.natoms*sizeof(double));
-    		sys.fz=(double *)malloc(sys.natoms*sizeof(double));
-	}
+    	sys.fx=(double *)malloc(sys.natoms*sizeof(double));
+    	sys.fy=(double *)malloc(sys.natoms*sizeof(double));
+	sys.fz=(double *)malloc(sys.natoms*sizeof(double));
+
 
     /* read restart */
     fp=fopen(restfile,"r");

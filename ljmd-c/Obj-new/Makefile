@@ -11,7 +11,7 @@ else
 CFLAGS=-Wall -O3 -ffast-math -fexpensive-optimizations -msse3 -fomit-frame-pointer
 endif
 
-LDLIBS=-lm
+LDLIBS=-lm 
 
 # list of source files
 SRC=main.c \
@@ -22,8 +22,8 @@ SRC=main.c \
     data.c \
     force.c \
 
-IPATH=../include/
-VPATH=../src  
+IPATH=../include/ 
+VPATH=../src/new 
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x
@@ -35,11 +35,11 @@ clean:
 
 # linker rule
 ../$(EXE): $(OBJ)
-	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
+	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS) 
 
 # compilation pattern rule for objects
 %.o: %.c 
-	$(CC) -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) -c $(CFLAGS) $< -I $(IPATH) -I /opt/openmpi/include
 
 # dependencies
 %.o: $(IPATH)%.h
