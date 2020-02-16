@@ -1,16 +1,7 @@
 #-*- Makefile -*-
-
-#turn on debug to activate
-debug := 
-
 SHELL=/bin/sh
 CC=gcc
-ifdef debug
-CFLAGS=-O0 -pg -g 
-else
-CFLAGS=-Wall -O3 -ffast-math -fexpensive-optimizations -msse3 -fomit-frame-pointer
-endif
-
+CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
 LDLIBS=-lm
 
 # list of source files
@@ -23,18 +14,18 @@ SRC=main.c \
     force.c \
 
 IPATH=../include/
-VPATH=../src  
+VPATH=../src
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x
 
-default: ../$(EXE)
+default: $(EXE)
 
 clean:
-	rm -f *.mod *.o ../main.x
+	rm -f *.mod *.o *.x *.txt *.times
 
 # linker rule
-../$(EXE): $(OBJ)
+$(EXE): $(OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
 # compilation pattern rule for objects

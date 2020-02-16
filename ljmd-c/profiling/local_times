@@ -1,0 +1,13 @@
+20.30user 0.00system 0:20.33elapsed 99%CPU (0avgtext+0avgdata 2104maxresident)k
+0inputs+1464outputs (0major+83minor)pagefaults 0swaps
+22.92user 0.01system 0:22.97elapsed 99%CPU (0avgtext+0avgdata 1964maxresident)k
+0inputs+1464outputs (0major+82minor)pagefaults 0swaps
+22.67user 0.02system 0:22.71elapsed 99%CPU (0avgtext+0avgdata 2080maxresident)k
+0inputs+1464outputs (0major+84minor)pagefaults 0swaps
+4.26user 0.00system 0:04.26elapsed 99%CPU (0avgtext+0avgdata 1564maxresident)k
+0inputs+1464outputs (0major+75minor)pagefaults 0swaps
+4.26user 0.00system 0:04.26elapsed 99%CPU (0avgtext+0avgdata 1812maxresident)k
+0inputs+1464outputs (0major+79minor)pagefaults 0swaps
+4.26user 0.00system 0:04.26elapsed 99%CPU (0avgtext+0avgdata 1712maxresident)k
+0inputs+1464outputs (0major+77minor)pagefaults 0swaps
+rm: cannot remove 'gmon.out': No such file or directory
