@@ -8,7 +8,7 @@ CC=gcc
 ifdef debug
 CFLAGS=-O0 -pg -g 
 else
-CFLAGS=-Wall -O3 -ffast-math -fexpensive-optimizations -msse3 -fomit-frame-pointer
+CFLAGS=-Wall -O3 -ffast-math 
 endif
 
 LDLIBS=-lm
