@@ -34,7 +34,7 @@ clean:
 	$(CC) -c $(CFLAGS) $< -I $(IPATH)
 
 force.o: force.c  data.c utilities.c
-	$(CC) -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
 	$(CC) $(LIBCOMPIL_FLAGS) data.o utilities.o force.o -o libforce.so 
 
 #utilities.o: utilities.c
