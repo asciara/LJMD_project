@@ -65,6 +65,7 @@ for i in range(system.natoms):
     system.rx[i] = c_double(float(rx))
     system.ry[i] = c_double(float(ry))
     system.rz[i] = c_double(float(rz))
+for i in range(system.natoms):
     vx, vy, vz = fp.readline().split()
     system.vx[i] = c_double(float(vx))
     system.vy[i] = c_double(float(vy))

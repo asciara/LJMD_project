@@ -34,16 +34,16 @@ clean:
 	$(CC) -c $(CFLAGS) $< -I $(IPATH)
 
 force.o: force.c  data.c utilities.c
-	$(CC) -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
 	$(CC) $(LIBCOMPIL_FLAGS) data.o utilities.o force.o -o libforce.so 
 
-#utilities.o: utilities.c
-#	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
-#	$(CC) $(LIBCOMPIL_FLAGS) utilities.o -o libutilities.so 
+utilities.o: utilities.c
+	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) $(LIBCOMPIL_FLAGS) utilities.o -o libutilities.so 
 
-#data.o: data.c
-#	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
-#	$(CC) $(LIBCOMPIL_FLAGS) data.o -o libdata.so 
+data.o: data.c
+	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) $(LIBCOMPIL_FLAGS) data.o -o libdata.so 
 
 #energy.o: energy.c  data.c
 #	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
