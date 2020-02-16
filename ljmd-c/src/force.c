@@ -15,6 +15,7 @@ void force(mdsys_t *sys)
 {
     double rsq, rcsq, ffac;
     double rx,ry,rz;
+    double t_fx, t_fy, t_fz;
     double c12, c6;
     int i,j;
 
@@ -30,6 +31,11 @@ void force(mdsys_t *sys)
     rcsq = sys->rcut * sys->rcut;
 
     for(i=0; i < (sys->natoms) -1 ; ++i) {
+        
+        t_fx = 0.0;
+        t_fy = 0.0;
+        t_fz = 0.0;
+        
         for(j= i+1 ; j < (sys->natoms); ++j) {
             
             /* get distance between particle i and j */
@@ -53,9 +59,9 @@ void force(mdsys_t *sys)
                 
                 sys->epot += r6 *(c12*r6 -c6);
                 
-                sys->fx[i] += rx*ffac;
-                sys->fy[i] += ry*ffac;
-                sys->fz[i] += rz*ffac;
+                t_fx += rx*ffac;
+                t_fy += ry*ffac;
+                t_fz += rz*ffac;
 
 		        sys->fx[j] -= rx*ffac;
 		        sys->fy[j] -= ry*ffac;
@@ -63,5 +69,11 @@ void force(mdsys_t *sys)
              
             }
         }
+    
+        sys->fx[i] += t_fx;
+        sys->fy[i] += t_fy;
+        sys->fz[i] += t_fz;
+    
     }
 }
+
