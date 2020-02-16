@@ -1,15 +1,18 @@
+# ENERGY TEST
+# run as:
+# python3 testenergy.py 
+
 import data
 from energy import *
 from ctypes import *
-
-# MAIN
-
-# define inputs
+import sys
 
 system = data.mdsys_t()
 
 system.natoms = 4;
 system.mass = 39.948;
+
+print("\nBEGIN ENERGY TESTS\n")
 
 # allocate memory
 
@@ -29,11 +32,26 @@ for i in range(system.natoms):
 
 fp.close()
 
-# initialize forces and energies
+# compute kinetic energy and temperature
 
 system.nfi = 0
 
 ekin(system)
 
 print("Kinetic energy on %d atoms: %f" % (system.natoms, system.ekin))
-print("Temperature: %f" % (system.temp));
+if abs(system.ekin - 0.989665) < 1e-5:
+    print("OK: correct kinetic energy")
+else:
+    print("ERROR: wrong kinetic energy")
+    sys.exit(-1)
+    
+print("\nTemperature: %f" % (system.temp))
+if abs(system.temp - 110.670746) < 1e-5:
+    print("OK: correct temperature")
+else:
+    print("ERROR: wrong temperature")
+    sys.exit(-1)
+    
+print("\nOK: energy tests passed")
+
+print("\nEND ENERGY TESTS\n")
