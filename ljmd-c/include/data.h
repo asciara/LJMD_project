@@ -17,7 +17,17 @@ struct _mdsys {
     double *rx, *ry, *rz;
     double *vx, *vy, *vz;
     double *fx, *fy, *fz;
+
+    /*Cell List params*/
+    cell_t * clist;
+    cell_t * plist;
 };
 typedef struct _mdsys mdsys_t;
+
+struct _cell {
+	int natoms;
+	int idxlist[natoms];
+};
+typedef struct _cell cell_t;
 
 #endif
