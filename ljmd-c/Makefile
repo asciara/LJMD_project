@@ -34,6 +34,8 @@ clean:
 	$(MAKE) $(MFLAGS) -C unit_testing/utilities clean
 
 
-check:	
+
+check: new
+
 	$(MAKE) $(MFLAGS) -C examples check
 
