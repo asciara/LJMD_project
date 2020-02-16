@@ -14,7 +14,7 @@ SRC=main.c \
     force.c \
 
 IPATH=../include/
-VPATH=../src
+VPATH=../src  
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x
