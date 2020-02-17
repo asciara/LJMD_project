@@ -38,7 +38,7 @@ typedef struct _mdsys mdsys_t;
 
 struct _cell {
 	int natoms;
-	int idxlist[natoms];
+	int * idxlist;
 };
 typedef struct _cell cell_t;
 
