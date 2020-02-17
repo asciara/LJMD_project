@@ -21,6 +21,12 @@ int main(int argc, char **argv)
     FILE *fp,*traj,*erg;
     mdsys_t sys;
 
+#if defined (_OPENMP)
+    sys.nthreads = omp_get_num_threads()
+#else
+    sys.nthreads = 1
+#endif
+
     sys.mpicomm=MPI_COMM_WORLD;
 
     MPI_Init(&argc,&argv);

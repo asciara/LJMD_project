@@ -22,6 +22,12 @@ int main(int argc, char **argv)
     FILE *fp,*traj,*erg;
     mdsys_t sys;
 
+#if defined (_OPENMP)
+    sys.nthreads = omp_get_num_threads()
+#else
+    sys.nthreads = 1
+#endif
+
     /* read input file */
     if(get_a_line(stdin,line)) return 1;
     sys.natoms=atoi(line);
