@@ -1,4 +1,4 @@
 language: c
 script: 
-  - cd ljmd-c #&& make && make test
+  - cd ljmd-c && make check && make test
 
