@@ -1,6 +1,10 @@
 language: c
+cache:
+  directories:
+  - openmpi
+  - openmpi-2.0.1
 before_install:
-  - sudo apt-get -y install openmpi
+  - sh ./.build_openmpi.sh
 script: 
   - cd ljmd-c && make check && make test
 
