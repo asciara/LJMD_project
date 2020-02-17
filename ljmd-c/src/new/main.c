@@ -81,7 +81,7 @@ int main(int argc, char **argv)
     sys.nfi=0;
     force(&sys);
     ekin(&sys);
-    
+
     erg=fopen(ergfile,"w");
     traj=fopen(trajfile,"w");
 
