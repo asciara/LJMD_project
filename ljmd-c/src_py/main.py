@@ -86,8 +86,8 @@ ekin(system)
 erg = open(restfile, "w")
 traj = open(trajfile, "w")
 
-print("Starting simulation with %d atoms for %d steps.\n" % (system.natoms, system.nsteps));
-print("     NFI            TEMP            EKIN                 EPOT              ETOT\n");
+print("Starting simulation with %d atoms for %d steps." % (system.natoms, system.nsteps));
+print("     NFI            TEMP            EKIN                 EPOT              ETOT");
 
 output(system, erg, traj)
 
