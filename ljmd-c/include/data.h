@@ -1,6 +1,8 @@
 #ifndef DATA_H
 #define DATA_H
+#ifdef _MPI 
 #include <mpi.h>
+#endif
 /* generic file- or pathname buffer length */
 #define BLEN 200
 
@@ -19,7 +21,9 @@ struct _mdsys {
     double *fx, *fy, *fz;
     /*MPI data*/
     double *cx, *cy, *cz;
+#ifdef _MPI
     MPI_Comm mpicomm;
+#endif
     int nprocs;
     int mpirank;
     int nsize;

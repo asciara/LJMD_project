@@ -3,7 +3,7 @@ SHELL=/bin/sh
 CC=mpicc
 CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
 LDLIBS=-lm
-
+OFLAGS=-D_MPI
 # list of source files
 SRC=main_mpi.c \
     energy.c \
@@ -13,7 +13,7 @@ SRC=main_mpi.c \
     data.c \
     force_mpi.c \
 
-IPATH=../include/
+IPATH=../include/ 
 VPATH=../src/new ../src/mpi
 
 OBJ=$(SRC:%.c=%.o)
@@ -30,7 +30,7 @@ clean:
 
 # compilation pattern rule for objects
 %.o: %.c 
-	$(CC) -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) -c $(CFLAGS) $(OFLAGS) $< -I $(IPATH) 
 
 # dependencies
 %.o: $(IPATH)%.h
