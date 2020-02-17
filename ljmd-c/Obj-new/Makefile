@@ -45,14 +45,17 @@ clean:
 force.o: force.c  data.c utilities.c
 	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
 	$(CC) $(LIBCOMPIL_FLAGS) data.o utilities.o force.o -o libforce.so 
+	$(CC) -c $(CFLAGS) $< -I $(IPATH)
 
 utilities.o: utilities.c
 	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
 	$(CC) $(LIBCOMPIL_FLAGS) utilities.o -o libutilities.so 
+	$(CC) -c $(CFLAGS) $< -I $(IPATH)
 
 data.o: data.c
 	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
 	$(CC) $(LIBCOMPIL_FLAGS) data.o -o libdata.so 
+	$(CC) -c $(CFLAGS) $< -I $(IPATH)
 
 #energy.o: energy.c  data.c
 #	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
@@ -61,6 +64,7 @@ data.o: data.c
 velverlet.o: velverlet.c data.c utilities.c force.c
 	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
 	$(CC) $(LIBCOMPIL_FLAGS) velverlet.o data.o utilities.o force.o -o libvelverlet.so
+	$(CC) -c $(CFLAGS) $< -I $(IPATH)
 
 # dependencies
 %.o: $(IPATH)%.h
