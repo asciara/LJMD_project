@@ -1,7 +1,16 @@
 #-*- Makefile -*-
+
+#turn on debug to activate
+debug := 
+
 SHELL=/bin/sh
 CC=gcc
-CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
+ifdef debug
+CFLAGS=-O0 -pg -g 
+else
+CFLAGS=-Wall -O3 -ffast-math 
+endif
+
 LDLIBS=-lm
 LIBCOMPIL_FLAGS  = -shared
 
@@ -14,8 +23,8 @@ SRC=main.c \
     force.c \
     velverlet.c \
 
-IPATH=../include/
-VPATH=../src
+IPATH=../include/ 
+VPATH=../src/new 
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x
@@ -27,11 +36,11 @@ clean:
 
 # linker rule
 ../$(EXE): $(OBJ)
-	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
+	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS) 
 
 # compilation pattern rule for objects
 %.o: %.c 
-	$(CC) -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) -c $(CFLAGS) $< -I $(IPATH) 
 
 force.o: force.c  data.c utilities.c
 	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
@@ -49,9 +58,9 @@ data.o: data.c
 #	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
 #	$(CC) $(LIBCOMPIL_FLAGS) data.o energy.o -o libenergy.so 
 
-#velverlet.o: velverlet.c data.c utilities.c force.c
-#	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
-#	$(CC) $(LIBCOMPIL_FLAGS) velverlet.o data.o utilities.o force.o -o libvelverlet.so
+velverlet.o: velverlet.c data.c utilities.c force.c
+	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) $(LIBCOMPIL_FLAGS) velverlet.o data.o utilities.o force.o -o libvelverlet.so
 
 # dependencies
 %.o: $(IPATH)%.h
