@@ -43,23 +43,17 @@ void force(mdsys_t *sys)
                 double r6, rinv;
                 rinv= 1.0/rsq;
                 r6 = rinv * rinv * rinv;
-                //ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
-                //                         +6*pow(sys->sigma/r,6.0)/r);
-                
+
                 ffac = (12.0 * c12 * r6 -6.0*c6) * r6 *rinv;
-                
-                //sys->epot += 4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
-                //                               -pow(sys->sigma/r,6.0));
-                
                 sys->epot += r6 *(c12*r6 -c6);
                 
                 sys->fx[i] += rx*ffac;
                 sys->fy[i] += ry*ffac;
                 sys->fz[i] += rz*ffac;
 
-		        sys->fx[j] -= rx*ffac;
-		        sys->fy[j] -= ry*ffac;
-		        sys->fz[j] -= rz*ffac;
+		sys->fx[j] -= rx*ffac;
+		sys->fy[j] -= ry*ffac;
+		sys->fz[j] -= rz*ffac;
              
             }
         }
