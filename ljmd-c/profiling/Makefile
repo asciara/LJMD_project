@@ -5,10 +5,16 @@ CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
 LDLIBS=-lm
 
 # list of source files
-SRC=test_timestep.c velverlet.c  force.c data.c  utilities.c
+SRC=main.c \
+    energy.c \
+    utilities.c \
+    output.c \
+    velverlet.c \
+    data.c \
+    force.c \
 
-IPATH=../../include/
-VPATH=../../src/new
+IPATH=../include/
+VPATH=../src
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x
@@ -16,7 +22,7 @@ EXE=main.x
 default: $(EXE)
 
 clean:
-	rm -f *.mod *.o main.x
+	rm -f *.mod *.o *.x *.txt *.times
 
 # linker rule
 $(EXE): $(OBJ)
@@ -28,6 +34,3 @@ $(EXE): $(OBJ)
 
 # dependencies
 %.o: $(IPATH)%.h
-
-check: $(EXE) 
-	./$(EXE)
