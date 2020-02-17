@@ -20,6 +20,7 @@ void force(mdsys_t *sys)
 
     /* zero energy and forces */
     sys->epot=0.0;
+
     azzero(sys->fx,sys->natoms);
     azzero(sys->fy,sys->natoms);
     azzero(sys->fz,sys->natoms);

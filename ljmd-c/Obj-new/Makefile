@@ -23,8 +23,8 @@ SRC=main.c \
     force.c \
     velverlet.c \
 
-IPATH=../include/
-VPATH=../src
+IPATH=../include/ 
+VPATH=../src/new 
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x
@@ -36,11 +36,11 @@ clean:
 
 # linker rule
 ../$(EXE): $(OBJ)
-	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
+	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS) 
 
 # compilation pattern rule for objects
 %.o: %.c 
-	$(CC) -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) -c $(CFLAGS) $< -I $(IPATH) 
 
 force.o: force.c  data.c utilities.c
 	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
