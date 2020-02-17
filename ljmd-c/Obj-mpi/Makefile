@@ -35,17 +35,17 @@ clean:
 
 force_mpi.o: force_mpi.c  data.c utilities.c
 	$(CC) -fPIC -c $(CFLAGS) $(OFLAGS) $< -o force_mpi_fpic.o -I $(IPATH)
-	$(CC) $(LIBCOMPIL_FLAGS) data.o utilities.o force_mpi_fpic.o -o libforce_mpi.so 
+	$(CC) $(LIBCOMPIL_FLAGS) data_fpic.o utilities_fpic.o force_mpi_fpic.o -o libforce_mpi.so 
 	$(CC) -c $(CFLAGS) $(OFLAGS) $< -I $(IPATH)
 
 utilities.o: utilities.c
-	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
-	$(CC) $(LIBCOMPIL_FLAGS) utilities.o -o libutilities.so 
+	$(CC) -fPIC -c $(CFLAGS) $< -o utilities_fpic.o -I $(IPATH)
+	$(CC) $(LIBCOMPIL_FLAGS) utilities_fpic.o -o libutilities.so 
 	$(CC) -c $(CFLAGS) $< -I $(IPATH)
 
 data.o: data.c
-	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
-	$(CC) $(LIBCOMPIL_FLAGS) data.o -o libdata.so 
+	$(CC) -fPIC -c $(CFLAGS) $< -o data_fpic.o -I $(IPATH)
+	$(CC) $(LIBCOMPIL_FLAGS) data_fpic.o -o libdata.so 
 	$(CC) -c $(CFLAGS) $< -I $(IPATH)
 
 #energy.o: energy.c  data.c
@@ -53,8 +53,8 @@ data.o: data.c
 #	$(CC) $(LIBCOMPIL_FLAGS) data.o energy.o -o libenergy.so 
 
 velverlet.o: velverlet.c data.c utilities.c force_mpi.c
-	$(CC) -fPIC -c $(CFLAGS) $(OFLAGS) $< -I $(IPATH)
-	$(CC) $(LIBCOMPIL_FLAGS) velverlet.o data.o utilities.o force_mpi_fpic.o -o libvelverlet.so
+	$(CC) -fPIC -c $(CFLAGS) $(OFLAGS) $< -o velverlet_fpic.o -I $(IPATH)
+	$(CC) $(LIBCOMPIL_FLAGS) velverlet_fpic.o data_fpic.o utilities_fpic.o force_mpi_fpic.o -o libvelverlet.so
 	$(CC) -c $(CFLAGS) $(OFLAGS) $< -I $(IPATH)
 	
 # dependencies
