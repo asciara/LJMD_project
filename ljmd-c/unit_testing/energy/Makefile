@@ -8,7 +8,7 @@ LDLIBS=-lm
 SRC=testenergy.c energy.c data.c
 
 IPATH=../../include/
-VPATH=../../src
+VPATH=../../src/new
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x

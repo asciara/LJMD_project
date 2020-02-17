@@ -6,7 +6,7 @@ LDLIBS=-lm
 # list of source files
 SRC=testutilities.c utilities.c
 IPATH=../../include/
-VPATH=../../src
+VPATH=../../src/new
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x
 default: $(EXE)
