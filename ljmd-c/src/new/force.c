@@ -11,6 +11,7 @@ void force(mdsys_t *sys)
 
     /* zero energy and forces */
     sys->epot=0.0;
+
     azzero(sys->fx,sys->natoms);
     azzero(sys->fy,sys->natoms);
     azzero(sys->fz,sys->natoms);
@@ -31,7 +32,7 @@ void force(mdsys_t *sys)
             if (r < sys->rcut) {
                 ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
                                          +6*pow(sys->sigma/r,6.0)/r);
-                
+          
                 sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
                                                -pow(sys->sigma/r,6.0));
 

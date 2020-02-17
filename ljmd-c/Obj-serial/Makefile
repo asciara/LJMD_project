@@ -6,7 +6,7 @@ LDLIBS=-lm
 
 # list of source files
 SRC=ljmd.c
-VPATH=../src
+VPATH=../src/serial
 OBJ=$(SRC:%.c=%.o)
 
 default: ../ljmd-serial.x
