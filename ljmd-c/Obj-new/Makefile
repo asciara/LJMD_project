@@ -1,7 +1,16 @@
 #-*- Makefile -*-
+
+#turn on debug to activate
+debug := 
+
 SHELL=/bin/sh
 CC=gcc
-CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
+ifdef debug
+CFLAGS=-O0 -pg -g 
+else
+CFLAGS=-Wall -O3 -ffast-math 
+endif
+
 LDLIBS=-lm
 LIBCOMPIL_FLAGS  = -shared
 
