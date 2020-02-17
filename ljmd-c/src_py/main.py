@@ -1,13 +1,3 @@
-MPIparallel=False
-if(MPIparallel):
-  from mpi4py import MPI
-  comm  = MPI.COMM_WORLD
-  rank  = comm.Get_rank()
-  nranks =comm.size
-else:
-  nranks=1
-  rank=0
-
 import numpy as np
 import sys
 from ctypes import *
