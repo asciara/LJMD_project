@@ -39,7 +39,7 @@ clean:
 
 # compilation pattern rule for objects
 %.o: %.c 
-	$(CC) -c $(CFLAGS) $< -I $(IPATH) -I /opt/openmpi/include
+	$(CC) -c $(CFLAGS) $< -I $(IPATH) 
 
 # dependencies
 %.o: $(IPATH)%.h
