@@ -27,7 +27,7 @@ def create_system(input_contents):
 
 # TEST (to be later removed)
 
-print("BLEN = ", BLEN)
+#print("BLEN = ", BLEN)
 print("kboltz = ", kboltz)
 print("mvsq2e = ", mvsq2e)
 

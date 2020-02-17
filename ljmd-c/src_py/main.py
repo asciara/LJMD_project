@@ -1,3 +1,13 @@
+MPIparallel=False
+if(MPIparallel):
+  from mpi4py import MPI
+  comm  = MPI.COMM_WORLD
+  rank  = comm.Get_rank()
+  nranks =comm.size
+else:
+  nranks=1
+  rank=0
+
 import numpy as np
 import sys
 from ctypes import *
@@ -33,11 +43,11 @@ def create_system(input_contents):
 
 # read input file
 
-#system,restfile,trajfile,ergfile,nprint=create_system(sys.stdin)
+system,restfile,trajfile,ergfile,nprint=create_system(sys.stdin)
 
-f = open("../examples/argon_108.inp", "r")
-system,restfile,trajfile,ergfile,nprint=create_system(f) 
-f.close()
+#f = open("../examples/argon_108.inp", "r")
+#system,restfile,trajfile,ergfile,nprint=create_system(f) 
+#f.close()
 
 # allocate memory
 
@@ -80,6 +90,7 @@ system.fz = (c_double * system.natoms)()
 fp = open("../examples/" + restfile, "r")
 
 for i in range(system.natoms):
+    #print(fp.readline().split())
     rx, ry, rz = fp.readline().split()
     system.rx[i] = c_double(float(rx))
     system.ry[i] = c_double(float(ry))
@@ -130,11 +141,12 @@ for system.nfi in range(1, system.nsteps + 1):
         output(system, erg, traj);
 
     # propagate system and recompute energies 
-    vso.velverlet_first(system);
-    #velverlet.first(system)
-    fso.force(system)
-    #velverlet.second(system)
-    vso.velverlet_second(system);
+    vso.velverlet(system);
+    #vso.velverlet_first(system);
+    ##velverlet.first(system)
+    #fso.force(system)
+    ##velverlet.second(system)
+    #vso.velverlet_second(system);
     #eso.ekin(system)
     ekin(system)
     
