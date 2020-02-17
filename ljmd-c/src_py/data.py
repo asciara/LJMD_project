@@ -1,8 +1,7 @@
 from ctypes import *
+import sys
+from utilities import get_a_line
 
-# generic file- or pathname buffer length 
-
-BLEN = 200
 
 # a few physical constants 
 
@@ -39,13 +38,3 @@ class mdsys_t(Structure):
         ("fy", c_double_p),
         ("fz", c_double_p)
     ]
-
-#struct _mdsys {
-#    int natoms,nfi,nsteps;
-#    double dt, mass, epsilon, sigma, box, rcut;
-#    double ekin, epot, temp;
-#    double *rx, *ry, *rz;
-#    double *vx, *vy, *vz;
-#    double *fx, *fy, *fz;
-#};
-#typedef struct _mdsys mdsys_t; 
