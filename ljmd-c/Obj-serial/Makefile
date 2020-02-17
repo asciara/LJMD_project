@@ -3,19 +3,21 @@ SHELL=/bin/sh
 CC=gcc
 CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
 LDLIBS=-lm
+EXE=ljmd-serial.x
+
 
 # list of source files
 SRC=ljmd.c
 VPATH=../src/serial
 OBJ=$(SRC:%.c=%.o)
 
-default: ../ljmd-serial.x
+default: ../$(EXE)
 
 clean:
 	rm -f *.mod *.o ../ljmd-serial.x
 
 # linker rule
-../ljmd-serial.x: $(OBJ)
+../$(EXE): $(OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
 # compilation pattern rule for objects

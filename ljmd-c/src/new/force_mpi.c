@@ -2,11 +2,20 @@
 #include "data.h"
 #include "prototypes.h"
 
+/* helper function: apply minimum image convention */
+static inline __attribute__((always_inline)) double pbc(double x, const double boxby2)
+{
+    while (x >  boxby2) x -= 2.0*boxby2;
+    while (x < -boxby2) x += 2.0*boxby2;
+    return x;
+}
+
 /* compute forces */
 void force(mdsys_t *sys) 
 {
-    double r,ffac;
+    double rsq, rcsq, ffac;
     double rx,ry,rz;
+    double c12,c6;
     int i,j;
 
     /* zero energy and forces */
@@ -15,6 +24,10 @@ void force(mdsys_t *sys)
     azzero(sys->cx,sys->natoms);
     azzero(sys->cy,sys->natoms);
     azzero(sys->cz,sys->natoms);
+
+    c12 = 4.0 * sys->epsilon*pow(sys->sigma, 12.0);
+    c6 = 4.0 * sys->epsilon*pow(sys->sigma, 6.0);
+    rcsq = sys->rcut * sys->rcut;
 
     // rank 0 broadcasts all updated positions to other ranks
     MPI_Bcast(sys->rx,sys->natoms,MPI_DOUBLE,0,sys->mpicomm);
@@ -29,24 +42,28 @@ void force(mdsys_t *sys)
             rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
             ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
             rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
-            r = sqrt(rx*rx + ry*ry + rz*rz);
+            rsq = rx*rx + ry*ry + rz*rz;
       
             /* compute force and energy if within cutoff */
-            if (r < sys->rcut) {
-                ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r +6*pow(sys->sigma/r,6.0)/r);
-          
-                epot += 4.0*sys->epsilon*(pow(sys->sigma/r,12.0) -pow(sys->sigma/r,6.0));
+            if (rsq<rcsq) {
+		double r6,rinv;
+		rinv=1.0/rsq;
+                r6 = rinv * rinv * rinv;
+
+                ffac = (12.0 * c12 * r6 -6.0*c6) * r6 *rinv;
+                epot += r6 *(c12*r6 -c6);
+                
 
 		//The c array contains, for every particle in the box, the sum of force contributions coming from particles in a given rank. We need to perform a reduction (MPI_Reduce) to sum the 
 		//contributions coming from all ranks.
 		
-                sys->cx[i] += rx/r*ffac;
-                sys->cy[i] += ry/r*ffac;
-                sys->cz[i] += rz/r*ffac;
+                sys->cx[i] += rx*ffac;
+                sys->cy[i] += ry*ffac;
+                sys->cz[i] += rz*ffac;
                 
-		sys->cx[j] -= rx/r*ffac;
-                sys->cy[j] -= ry/r*ffac;
-                sys->cz[j] -= rz/r*ffac;
+		sys->cx[j] -= rx*ffac;
+                sys->cy[j] -= ry*ffac;
+                sys->cz[j] -= rz*ffac;
 	    }
 
 	}

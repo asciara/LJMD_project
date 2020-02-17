@@ -14,7 +14,7 @@ SRC=main_mpi.c \
     force_mpi.c \
 
 IPATH=../include/ 
-VPATH=../src/new ../src/mpi
+VPATH=../src/new 
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main_mpi.x
