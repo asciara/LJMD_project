@@ -1,6 +1,6 @@
 language: c
 before_install:
-  - sudo apt-get install -y openmpi-bin
+  - sudo apt-get install -y openmpi-bin openmpi-devel
 script: 
   - cd ljmd-c && make check && make test
 
