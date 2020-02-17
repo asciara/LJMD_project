@@ -16,10 +16,6 @@ void force(mdsys_t *sys)
     azzero(sys->fy,sys->natoms);
     azzero(sys->fz,sys->natoms);
 
-    azzero(sys->cx,sys->natoms);
-    azzero(sys->cy,sys->natoms);
-    azzero(sys->cz,sys->natoms);
-
     for(i=0; i < (sys->natoms); ++i) {
         for(j=0; j < (sys->natoms); ++j) {
 
