@@ -8,7 +8,7 @@ LDLIBS=-lm
 SRC=testforce_mpi.c utilities.c force_mpi.c
 
 IPATH=../../include/
-VPATH=../../src/mpi ../../src
+VPATH=../../src/mpi ../../src/new
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x

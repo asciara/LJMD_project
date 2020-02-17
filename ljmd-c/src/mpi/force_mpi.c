@@ -21,7 +21,7 @@ void force(mdsys_t *sys)
     MPI_Bcast(sys->ry,sys->natoms,MPI_DOUBLE,0,sys->mpicomm);
     MPI_Bcast(sys->rz,sys->natoms,MPI_DOUBLE,0,sys->mpicomm);
 
-    for(i=sys->mpirank; i < sys->natoms; i+=sys->mpirank+1) {
+    for(i=sys->mpirank; i < sys->natoms; i+=sys->nprocs) {
        
 	for(j=i+1;j < (sys->natoms); ++j) {
 
@@ -35,7 +35,7 @@ void force(mdsys_t *sys)
             if (r < sys->rcut) {
                 ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r +6*pow(sys->sigma/r,6.0)/r);
           
-                epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0) -pow(sys->sigma/r,6.0));
+                epot += 4.0*sys->epsilon*(pow(sys->sigma/r,12.0) -pow(sys->sigma/r,6.0));
 
 		//The c array contains, for every particle in the box, the sum of force contributions coming from particles in a given rank. We need to perform a reduction (MPI_Reduce) to sum the 
 		//contributions coming from all ranks.

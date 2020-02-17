@@ -35,7 +35,8 @@ clean:
 
 
 
-check: new
+check: new mpi
 
 	$(MAKE) $(MFLAGS) -C examples check
+	$(MAKE) $(MFLAGS) -C examples checkmpi
 
