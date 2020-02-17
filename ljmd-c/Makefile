@@ -12,7 +12,7 @@ new:
 
 test:
 	$(MAKE) $(MFLAGS) -C unit_testing/force check
-	$(MAKE) $(MFLAGS) -C unit_testing/verlet check
+	$(MAKE) $(MFLAGS) -C unit_testing/velverlet check
 	$(MAKE) $(MFLAGS) -C unit_testing/energy check
 	$(MAKE) $(MFLAGS) -C unit_testing/utilities check
 
@@ -29,7 +29,7 @@ clean:
 	$(MAKE) $(MFLAGS) -C Obj-new clean
 	$(MAKE) $(MFLAGS) -C Obj-mpi clean
 	$(MAKE) $(MFLAGS) -C unit_testing/force clean
-	$(MAKE) $(MFLAGS) -C unit_testing/verlet clean
+	$(MAKE) $(MFLAGS) -C unit_testing/velverlet clean
 	$(MAKE) $(MFLAGS) -C unit_testing/energy clean
 	$(MAKE) $(MFLAGS) -C unit_testing/utilities clean
 
