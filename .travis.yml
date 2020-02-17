@@ -1,11 +1,6 @@
-sudo: false
 language: c
-cache:
-  directories:
-  - openmpi
-  - openmpi-2.0.1
 before_install:
-  - sh ./.build_openmpi.sh
+  - sudo apt-get install -y openmpi-bin
 script: 
   - cd ljmd-c && make check && make test
 
