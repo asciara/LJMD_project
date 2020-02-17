@@ -1,3 +1,4 @@
+import numpy as np
 import sys
 from ctypes import *
 import data
@@ -5,6 +6,7 @@ from utilities import *
 from output import *
 import velverlet
 from energy import *
+import timeit
 
 def create_system(input_contents):
    S=data.mdsys_t()
@@ -39,6 +41,29 @@ f.close()
 
 # allocate memory
 
+
+np_rx = np.zeros((system.natoms),dtype=np.float64) 
+np_ry = np.zeros((system.natoms),dtype=np.float64)
+np_rz = np.zeros((system.natoms),dtype=np.float64)
+np_vx = np.zeros((system.natoms),dtype=np.float64)
+np_vy = np.zeros((system.natoms),dtype=np.float64)
+np_vz = np.zeros((system.natoms),dtype=np.float64)
+np_fx = np.zeros((system.natoms),dtype=np.float64)
+np_fy = np.zeros((system.natoms),dtype=np.float64)
+np_fz = np.zeros((system.natoms),dtype=np.float64)
+
+system.rx = np_rx.ctypes.data_as(POINTER(c_double))
+system.ry = np_ry.ctypes.data_as(POINTER(c_double)) 
+system.rz = np_rz.ctypes.data_as(POINTER(c_double)) 
+system.vx = np_vx.ctypes.data_as(POINTER(c_double)) 
+system.vy = np_vy.ctypes.data_as(POINTER(c_double)) 
+system.vz = np_vz.ctypes.data_as(POINTER(c_double))
+system.fx = np_fx.ctypes.data_as(POINTER(c_double)) 
+system.fy = np_fy.ctypes.data_as(POINTER(c_double)) 
+system.fz = np_fz.ctypes.data_as(POINTER(c_double)) 
+
+
+'''
 system.rx = (c_double * system.natoms)()
 system.ry = (c_double * system.natoms)()
 system.rz = (c_double * system.natoms)()
@@ -48,6 +73,7 @@ system.vz = (c_double * system.natoms)()
 system.fx = (c_double * system.natoms)()
 system.fy = (c_double * system.natoms)()
 system.fz = (c_double * system.natoms)()
+'''
 
 # read restart
 
@@ -76,8 +102,10 @@ fso.force.argtypes =[POINTER(data.mdsys_t)] #Structure
 #eso = CDLL("../Obj-new/libenergy.so" )
 #eso.ekin.argtypes =[POINTER(data.mdsys_t)] #Structure
 
-#vso = CDLL("../Obj-new/libvelverlet.so" )
-#vso.velverlet.argtypes =[POINTER(data.mdsys_t)] #Structure
+vso = CDLL("../Obj-new/libvelverlet.so" )
+vso.velverlet.argtypes =[POINTER(data.mdsys_t)] #Structure
+vso.velverlet_first.argtypes =[POINTER(data.mdsys_t)] #Structure
+vso.velverlet_second.argtypes =[POINTER(data.mdsys_t)] #Structure
 
 fso.force(system)
 #eso.ekin(system)
@@ -102,10 +130,11 @@ for system.nfi in range(1, system.nsteps + 1):
         output(system, erg, traj);
 
     # propagate system and recompute energies 
-    #vso.velverlet(system);
-    velverlet.first(system)
+    vso.velverlet_first(system);
+    #velverlet.first(system)
     fso.force(system)
-    velverlet.second(system)
+    #velverlet.second(system)
+    vso.velverlet_second(system);
     #eso.ekin(system)
     ekin(system)
     
