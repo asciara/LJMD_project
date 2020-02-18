@@ -45,7 +45,8 @@ EXE=main.x
 default: ../$(EXE)
 
 clean:
-	rm -f *.mod *.o *.so ../main.x
+	rm -f *.mod *.o *.so ../main.x ../src_py/argon_108.* ../src_py/argon_2916.*
+	rm -rf ../src_py/__pycache__
 
 # linker rule
 ../$(EXE): $(OBJ)
