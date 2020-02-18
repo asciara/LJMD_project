@@ -21,10 +21,6 @@ void force(mdsys_t *sys)
     /* zero energy and forces */
     double epot=0.0;
 
-    azzero(sys->fx,sys->natoms);
-    azzero(sys->fy,sys->natoms);
-    azzero(sys->fz,sys->natoms);
-    
     // define temporary variables for avoiding using power and sqrt in cycle
     c12 = 4.0 * sys->epsilon*pow(sys->sigma, 12.0);
     c6 = 4.0 * sys->epsilon*pow(sys->sigma, 6.0);
