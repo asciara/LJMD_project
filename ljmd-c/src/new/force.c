@@ -15,42 +15,54 @@ static inline __attribute__((always_inline)) double pbc(double x, const double b
 
 /* compute forces */
 void force(mdsys_t *sys) 
-{
+{   
+    
     double rcsq;
     double c12,c6;
+    double half_box;
+    
 
     /* zero energy and forces */
     double epot=0.0;
 
-    // define temporary variables for avoiding using power and sqrt in cycle
+    // define temporary variables for avoiding using power, sqrt and some mult in cycle
     c12 = 4.0 * sys->epsilon*pow(sys->sigma, 12.0);
     c6 = 4.0 * sys->epsilon*pow(sys->sigma, 6.0);
     rcsq = sys->rcut * sys->rcut;
-
+    half_box = 0.5*sys->box;
+    
+    /* def temporary buffer for position */
+    double * R;
+    
+    R=(double *)malloc(sys->natoms*sizeof(double));
+       
+    for(int i=0; i<sys->natoms; i++){
+        int ii = 3 * i;
+        R[ ii ] = sys->rx[i];
+        R[ ii + 1 ] = sys->ry[i];
+        R[ ii + 2 ] = sys->rz[i];   
+    }
+     
+    /* def temporary buffer for force */
+    
+    double * F;  
+    
+    F=(double *)malloc(3*sys->nthreads*sys->natoms*sizeof(double));
+    
+    printf("HERE WE ARE\n");
+    
 #if defined (_OPENMP)
 #pragma omp parallel reduction(+:epot)
 #endif
     {
        double rx,ry,rz;
-       double * R;
-       double * F;
        //double *fx,*fy,*fz;
-       double half_box;
        double * f;
        double rsq,ffac;
        double epot_priv=0.0;
        int i, ii;
        
-       half_box = 0.5*sys->box;
        
-       R=(double *)malloc(sys->natoms*sizeof(double));
-       
-       for(i=0; i<sys->natoms; i++){
-           ii = 3 * i;
-           R[ ii ] = sys->rx[i];
-           R[ ii + 1 ] = sys->ry[i];
-           R[ ii + 2 ] = sys->rz[i];
-       }
        
 #if defined (_OPENMP)
        int tid=omp_get_thread_num();
@@ -58,15 +70,17 @@ void force(mdsys_t *sys)
        int tid=0;
 #endif  
        
-       F = sys->fx;
-       F=(double *)malloc(3*sys->nthreads*sys->natoms*sizeof(double));
+       
        /*
        fx=sys->fx + (tid*sys->natoms); azzero(fx,sys->natoms);
        fy=sys->fy + (tid*sys->natoms); azzero(fy,sys->natoms);
        fz=sys->fz + (tid*sys->natoms); azzero(fz,sys->natoms);  
        */
        
-       f = F + (3 * tid * sys->natoms); azzero(f, 3 * sys->natoms); 
+       f = F + (3 * tid * sys->natoms); 
+       azzero(f, 3 * sys->natoms); 
+       
+       
        
        //azzero(fx,sys->natoms);
        
@@ -79,18 +93,21 @@ void force(mdsys_t *sys)
        
        //azzero(fz,sys->natoms);
        
+       printf("HERE WE ARE, %d, %d \n", tid, sys->nthreads);
+       
        for(i=tid; i < (sys->natoms) -1 ; i+=sys->nthreads) {
            for(int j= i+1 ; j < (sys->natoms); ++j) {
                
                ii = 3 * i;
                int jj = 3 * j;
                
-               
+               printf("HERE WE ARE BEFORE, %d, %d \n", tid, sys->nthreads);
                /* get distance between particle i and j */
                rx=pbc(R[ ii ] - R[ jj ], half_box);
                ry=pbc(R[ ii+1 ] - R[ jj+1 ], half_box);
                rz=pbc(R[ ii+2 ] - R[ jj+2 ], half_box);
                rsq = rx*rx + ry*ry + rz*rz;
+               printf("HERE WE ARE AFTER, %d, %d \n", tid, sys->nthreads);
          
                /* compute force and energy if within cutoff */
                if (rsq < rcsq) {
@@ -118,6 +135,9 @@ void force(mdsys_t *sys)
                }
            }
        }
+       
+
+       
        epot += epot_priv;  // omp reduction of epot
 #if defined (_OPENMP)
 #pragma omp barrier
@@ -132,11 +152,13 @@ void force(mdsys_t *sys)
            //sys->fx[j] += sys->fx[offs+j];
            //sys->fy[j] += sys->fy[offs+j];
            //sys->fz[j] += sys->fz[offs+j];
-           sys->fx[j] += F[ offs + j ];
-           sys->fy[j] += F[ offs + j + 1 ];
-           sys->fz[j] += F[ offs + j +2 ];
+           int jj = 3 * j;
+           sys->fx[j] += F[ offs + jj ];
+           sys->fy[j] += F[ offs + jj + 1 ];
+           sys->fz[j] += F[ offs + jj +2 ];
          }
        }
     } // end of parallel region
-    sys->epot  =epot;
+    
+    sys->epot=epot;
 }
