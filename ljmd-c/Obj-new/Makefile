@@ -12,6 +12,7 @@ endif
 
 ifdef perf
 FPERF=-fomit-frame-pointer
+FPERF +=-g
 else
 FPERF=
 endif
@@ -21,7 +22,7 @@ CC=gcc
 ifdef debug
 CFLAGS=-O0 -pg -g  $(FOPENMP) $(FPERF)
 else
-CFLAGS=-Wall -O3 -ffast-math $(FOPENMP) $(FPERF)
+CFLAGS=-Wall -O3 -ffast-math -march=native -mavx2  $(FOPENMP) $(FPERF)
 endif
 
 LDLIBS=-lm

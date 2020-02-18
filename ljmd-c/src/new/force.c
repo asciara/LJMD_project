@@ -1,5 +1,5 @@
 #include <math.h> //pow,sqrt
-#include <stdlib.h> //malloc
+#include <stdlib.h> //allocation
 #if defined (_OPENMP)
 #include <omp.h>
 #endif
@@ -15,23 +15,20 @@ static inline __attribute__((always_inline)) double pbc(double x, const double b
 
 /* compute forces */
 void force(mdsys_t *sys) 
-{   
-    
+{
     double rcsq;
     double c12,c6;
     double half_box;
-    
 
     /* zero energy and forces */
     double epot=0.0;
 
-    // define temporary variables for avoiding using power, sqrt and some mult in cycle
+    // define temporary variables for avoiding using power and sqrt in cycle
     c12 = 4.0 * sys->epsilon*pow(sys->sigma, 12.0);
     c6 = 4.0 * sys->epsilon*pow(sys->sigma, 6.0);
     rcsq = sys->rcut * sys->rcut;
     half_box = 0.5*sys->box;
     
-    /* def temporary buffer for position */
     double * R;
     
     R=(double *)malloc(3 * sys->natoms*sizeof(double));
@@ -42,100 +39,53 @@ void force(mdsys_t *sys)
         R[ ii + 1 ] = sys->ry[i];
         R[ ii + 2 ] = sys->rz[i];   
     }
-     
-    /* def temporary buffer for force */
-    
-    double * F;  
-    
-    F=(double *)malloc(3*sys->nthreads*sys->natoms*sizeof(double));
     
 #if defined (_OPENMP)
 #pragma omp parallel reduction(+:epot)
 #endif
     {
-       double rx,ry,rz;
-       //double *fx,*fy,*fz;
-       double * f;
+       double r[3];
+       double *fx,*fy,*fz;
        double rsq,ffac;
        double epot_priv=0.0;
-       int i, ii;
-       
-       
+       int i;
 #if defined (_OPENMP)
        int tid=omp_get_thread_num();
 #else
        int tid=0;
-#endif  
-       
-       
-       /*
+#endif
        fx=sys->fx + (tid*sys->natoms); azzero(fx,sys->natoms);
        fy=sys->fy + (tid*sys->natoms); azzero(fy,sys->natoms);
        fz=sys->fz + (tid*sys->natoms); azzero(fz,sys->natoms);  
-       */
-       
-       f = F + (3 * tid * sys->natoms); 
-       azzero(f, 3 * sys->natoms); 
-       
-       
-       //azzero(fx,sys->natoms);
-       
-       
-       //fy = F + 1 + (3 * tid * sys->natoms); 
-       
-       //azzero(fy,sys->natoms);
-       
-       //fz = F + 2 + (3 * tid * sys->natoms); 
-       
-       //azzero(fz,sys->natoms);
-       
+
        for(i=tid; i < (sys->natoms) -1 ; i+=sys->nthreads) {
            for(int j= i+1 ; j < (sys->natoms); ++j) {
-               
-               ii = 3 * i;
-               int jj = 3 * j;
-               
-               //printf("HERE WE ARE BEFORE, %d, %d, %d, %d \n", tid, sys->nthreads, i, j);
+               int ii = 3 * i;
+               int jj = 3* j;
                /* get distance between particle i and j */
-               //printf("HERE WE ARE BEFORE, %d, %d \n", ii, jj);
-               
-               rx=pbc(R[ ii ] - R[ jj ], half_box);
-               ry=pbc(R[ ii+1 ] - R[ jj+1 ], half_box);
-               rz=pbc(R[ ii+2 ] - R[ jj+2 ], half_box);
-               rsq = rx*rx + ry*ry + rz*rz;
-               
+               r[0]=pbc( R[ ii ] - R[ jj ], half_box);
+               r[1]=pbc(R[ ii + 1 ] - R[ jj + 1 ], half_box);
+               r[2]=pbc(R[ ii + 2 ] - R[ jj + 2 ], half_box);
+               rsq = r[0]*r[0] + r[1]*r[1] + r[2]*r[2];
          
                /* compute force and energy if within cutoff */
                if (rsq < rcsq) {
-               //printf("HERE WE ARE INSIDE IF, %d, %d \n", tid, sys->nthreads);
                    double r6, rinv;
                    rinv= 1.0/rsq;
                    r6 = rinv * rinv * rinv;
       
                    ffac = (12.0 * c12 * r6 -6.0*c6) * r6 *rinv;
                    epot_priv += r6 *(c12*r6 -c6);
-                   
-                   /*
-                   fx[i] += rx*ffac;
-                   fy[i] += ry*ffac;
-                   fz[i] += rz*ffac;
-                   fx[j] -= rx*ffac;
-           	       fy[j] -= ry*ffac;
-           	       fz[j] -= rz*ffac;
-                   */
-                   f[ ii ] += rx*ffac;
-                   f[ ii + 1 ] += ry*ffac;
-                   f[ ii + 2 ] += rz*ffac;
-                   f[ jj ] += rx*ffac;
-                   f[ jj + 1 ] += ry*ffac;
-                   f[ jj + 2 ] += rz*ffac;
-                   
+      
+                   fx[i] += r[0]*ffac;
+                   fy[i] += r[1]*ffac;
+                   fz[i] += r[2]*ffac;
+                   fx[j] -= r[0]*ffac;
+           	       fy[j] -= r[1]*ffac;
+           	       fz[j] -= r[2]*ffac;
                }
            }
        }
-       
-
-       
        epot += epot_priv;  // omp reduction of epot
 #if defined (_OPENMP)
 #pragma omp barrier
@@ -144,22 +94,14 @@ void force(mdsys_t *sys)
        int fromidx = tid * i;
        int toidx = fromidx + i;
        if (toidx > sys->natoms) toidx = sys->natoms;
-       
        for (i=1; i < sys->nthreads; ++i) {
-       
-         int offs = 3 * i *sys->natoms;
-         
+         int offs = i*sys->natoms;
          for (int j=fromidx; j < toidx; ++j) {
-           //sys->fx[j] += sys->fx[offs+j];
-           //sys->fy[j] += sys->fy[offs+j];
-           //sys->fz[j] += sys->fz[offs+j];
-           int jj = 3 * j;
-           sys->fx[j] += F[ offs + jj ];
-           sys->fy[j] += F[ offs + jj + 1 ];
-           sys->fz[j] += F[ offs + jj + 2 ];
+           sys->fx[j] += sys->fx[offs+j];
+           sys->fy[j] += sys->fy[offs+j];
+           sys->fz[j] += sys->fz[offs+j];
          }
        }
     } // end of parallel region
-    
-    sys->epot=epot;
+    sys->epot  =epot;
 }
