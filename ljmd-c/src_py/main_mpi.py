@@ -18,7 +18,7 @@ from utilities import *
 from output import *
 import velverlet
 from energy import *
-import timeit
+import time
 from mpi4py import MPI
 
 def create_system(S, input_contents):
@@ -164,14 +164,21 @@ if system.mpirank == 0:
 
 #**************************************************
 
-# main MD loop 
+# main MD loop with timing
+
+ 
+t = 0.0
+final_t=0.0
+
 
 for system.nfi in range(1, system.nsteps + 1):
 
     # write output, if requested 
     if (system.mpirank == 0 and (system.nfi % nprint) == 0):
         output(system, erg, traj);
-
+    
+    t_tmp = time.time()
+    
     # propagate system and recompute energies 
     if system.mpirank == 0:
         vso.velverlet_first(system);
@@ -184,6 +191,15 @@ for system.nfi in range(1, system.nsteps + 1):
         vso.velverlet_second(system);
         #eso.ekin(system)
         ekin(system)
+    
+    t += time.time() - t_tmp
+
+
+final_t = comm.reduce(t, op=MPI.MAX, root = 0)
+
+print("Time proc %d: %.6f" %(system.mpirank, t))
+if system.mpirank == 0:
+    print("Evolve time: %.6f" %(final_t))
     
 #**************************************************
 
