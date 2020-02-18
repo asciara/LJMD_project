@@ -2,13 +2,20 @@
 
 #turn on debug to activate
 debug := 
+openmp := 
+
+ifdef sequential
+FOPENMP=
+else
+FOPENMP=-fopenmp
+endif
 
 SHELL=/bin/sh
 CC=gcc
 ifdef debug
-CFLAGS=-O0 -pg -g 
+CFLAGS=-O0 -pg -g  $(FOPENMP)
 else
-CFLAGS=-Wall -O3 -ffast-math 
+CFLAGS=-Wall -O3 -ffast-math $(FOPENMP)
 endif
 
 LDLIBS=-lm
