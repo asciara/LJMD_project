@@ -5,7 +5,7 @@
 #include "data.h"
 #include "prototypes.h"
 /* helper function: apply minimum image convention */
-static inline __attribute__((always_inline)) double pbc(double x, const double boxby2)
+static inline __attribute__((always_inline)) double pbc(double x, const double boxby2) 
 {
     while (x >  boxby2) x -= 2.0*boxby2;
     while (x < -boxby2) x += 2.0*boxby2;
