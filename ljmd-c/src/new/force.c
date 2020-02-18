@@ -34,7 +34,7 @@ void force(mdsys_t *sys)
     /* def temporary buffer for position */
     double * R;
     
-    R=(double *)malloc(sys->natoms*sizeof(double));
+    R=(double *)malloc(3 * sys->natoms*sizeof(double));
        
     for(int i=0; i<sys->natoms; i++){
         int ii = 3 * i;
@@ -49,7 +49,9 @@ void force(mdsys_t *sys)
     
     F=(double *)malloc(3*sys->nthreads*sys->natoms*sizeof(double));
     
-    printf("HERE WE ARE\n");
+    azzero(sys->fx,sys->natoms);
+    azzero(sys->fy,sys->natoms);
+    azzero(sys->fy,sys->natoms);
     
 #if defined (_OPENMP)
 #pragma omp parallel reduction(+:epot)
@@ -61,7 +63,6 @@ void force(mdsys_t *sys)
        double rsq,ffac;
        double epot_priv=0.0;
        int i, ii;
-       
        
        
 #if defined (_OPENMP)
@@ -81,7 +82,6 @@ void force(mdsys_t *sys)
        azzero(f, 3 * sys->natoms); 
        
        
-       
        //azzero(fx,sys->natoms);
        
        
@@ -93,30 +93,32 @@ void force(mdsys_t *sys)
        
        //azzero(fz,sys->natoms);
        
-       printf("HERE WE ARE, %d, %d \n", tid, sys->nthreads);
-       
        for(i=tid; i < (sys->natoms) -1 ; i+=sys->nthreads) {
            for(int j= i+1 ; j < (sys->natoms); ++j) {
                
                ii = 3 * i;
                int jj = 3 * j;
                
-               printf("HERE WE ARE BEFORE, %d, %d \n", tid, sys->nthreads);
+               //printf("HERE WE ARE BEFORE, %d, %d \n", tid, sys->nthreads);
                /* get distance between particle i and j */
+               //printf("HERE WE ARE BEFORE, %d, %d \n", ii, jj);
+               
                rx=pbc(R[ ii ] - R[ jj ], half_box);
                ry=pbc(R[ ii+1 ] - R[ jj+1 ], half_box);
                rz=pbc(R[ ii+2 ] - R[ jj+2 ], half_box);
                rsq = rx*rx + ry*ry + rz*rz;
-               printf("HERE WE ARE AFTER, %d, %d \n", tid, sys->nthreads);
+               
          
                /* compute force and energy if within cutoff */
                if (rsq < rcsq) {
+               //printf("HERE WE ARE INSIDE IF, %d, %d \n", tid, sys->nthreads);
                    double r6, rinv;
                    rinv= 1.0/rsq;
                    r6 = rinv * rinv * rinv;
       
                    ffac = (12.0 * c12 * r6 -6.0*c6) * r6 *rinv;
                    epot_priv += r6 *(c12*r6 -c6);
+                   
                    /*
                    fx[i] += rx*ffac;
                    fy[i] += ry*ffac;
@@ -126,11 +128,11 @@ void force(mdsys_t *sys)
            	       fz[j] -= rz*ffac;
                    */
                    f[ ii ] += rx*ffac;
-                   f[ ii + 1 ] += rx*ffac;
-                   f[ ii + 2 ] += rx*ffac;
+                   f[ ii + 1 ] += ry*ffac;
+                   f[ ii + 2 ] += rz*ffac;
                    f[ jj ] += rx*ffac;
-                   f[ jj + 1 ] += rx*ffac;
-                   f[ jj + 2 ] += rx*ffac;
+                   f[ jj + 1 ] += ry*ffac;
+                   f[ jj + 2 ] += rz*ffac;
                    
                }
            }
