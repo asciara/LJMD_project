@@ -30,4 +30,8 @@ void velverlet(mdsys_t *sys);
 /* append data to output. */
 void output(mdsys_t *sys, FILE *erg, FILE *traj);
 
+
+void fill_cell_list(mdsys_t * sys);
+
+void print_cell_list(mdsys_t * sys);
 #endif

@@ -12,6 +12,15 @@ extern const double mvsq2e; /* m*v^2 in kcal/mol */
 
 /* structure to hold the complete information 
  * about the MD system */
+
+struct _cell {
+	_Bool check;
+	int natoms;
+	int * idxlist;
+
+};
+typedef struct _cell cell_t;
+
 struct _mdsys {
     int natoms,nfi,nsteps;
     double dt, mass, epsilon, sigma, box, rcut;
@@ -23,7 +32,7 @@ struct _mdsys {
     /*Cell List params*/
     cell_t * clist;
     cell_t * plist;
-
+    int CpD; // cells per dimension
     /*MPI data*/
     double *cx, *cy, *cz;
 #ifdef _MPI
@@ -36,10 +45,5 @@ struct _mdsys {
 };
 typedef struct _mdsys mdsys_t;
 
-struct _cell {
-	int natoms;
-	int * idxlist;
-};
-typedef struct _cell cell_t;
 
 #endif
