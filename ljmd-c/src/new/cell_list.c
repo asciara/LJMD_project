@@ -9,7 +9,7 @@ void fill_cell_list(mdsys_t *sys){
 	double cell_len=sys->rcut + (double) mod/div;
 
 	int N=sys->box/cell_len;
-	sys->CpD=N;
+	sys->N=N;
 	printf("cell_len: %f	/ N: %d\n",cell_len,N);
 	sys->clist= (cell_t *) malloc(N*N*N*sizeof(cell_t));
 	for (int i=0;i<N*N*N;i++){
@@ -47,12 +47,63 @@ void fill_cell_list(mdsys_t *sys){
 
 }
 
-void update_cell_list(){
+void build_pairs(mdsys_t * sys){
+	int N=sys->N;
+	sys->npairs=13*N*N*N;
+	sys->plist=(cell_t *) malloc(sys->npairs*2*sizeof(cell_t));
+	for(int i=0;i<N*N*N;i++){
+		sys->plist[26*i]=sys->clist[i];	
+		sys->plist[26*i+1]=sys->clist[i+1];
 
+		sys->plist[26*i+2]=sys->clist[i];	
+		sys->plist[26*i+3]=sys->clist[i+N];
+	
+		sys->plist[26*i+4]=sys->clist[i];	
+		sys->plist[26*i+5]=sys->clist[i+N+1];
+	
+		sys->plist[26*i+6]=sys->clist[i];	
+		sys->plist[26*i+7]=sys->clist[i+N*N];
+
+		sys->plist[26*i+8]=sys->clist[i];	
+		sys->plist[26*i+9]=sys->clist[i+N*N+1];
+
+		sys->plist[26*i+10]=sys->clist[i];	
+		sys->plist[26*i+11]=sys->clist[i+N*N+N];
+
+		sys->plist[26*i+12]=sys->clist[i];
+		sys->plist[26*i+13]=sys->clist[i+N*N+N+1];
+
+		sys->plist[26*i+14]=sys->clist[i+N*N];
+		sys->plist[26*i+15]=sys->clist[i+1];
+
+		sys->plist[26*i+16]=sys->clist[i+N*N];
+		sys->plist[26*i+17]=sys->clist[i+N];
+
+		sys->plist[26*i+18]=sys->clist[i+N*N];
+		sys->plist[26*i+19]=sys->clist[i+N+1];
+
+		sys->plist[26*i+20]=sys->clist[i+1];
+		sys->plist[26*i+21]=sys->clist[i+N];
+
+		sys->plist[26*i+22]=sys->clist[i+1];
+		sys->plist[26*i+23]=sys->clist[i+N*N+N];
+
+		sys->plist[26*i+24]=sys->clist[i+N];
+		sys->plist[26*i+25]=sys->clist[i+N*N+1];
+	
+	}
 }
 
+/*void print_pairs(mdsys_t * sys){
+	int N=sys->N;
+        for (int i=0;i<sys->npairs*2;i++){                                                     
+		
+	}                                                                      
+	printf("\n"); 
+}*/
+
 void print_cell_list(mdsys_t * sys){
-	int N=sys->CpD;
+	int N=sys->N;
 	for (int i=0;i<N*N*N;i++){
 		printf("Cell %d : ",i);
 		for (int j=0;j<sys->clist[i].natoms;j++){

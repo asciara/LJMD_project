@@ -30,9 +30,10 @@ struct _mdsys {
     double *fx, *fy, *fz;
 
     /*Cell List params*/
+    int npairs;
     cell_t * clist;
     cell_t * plist;
-    int CpD; // cells per dimension
+    int N; // cells per dimension
     /*MPI data*/
     double *cx, *cy, *cz;
 #ifdef _MPI
