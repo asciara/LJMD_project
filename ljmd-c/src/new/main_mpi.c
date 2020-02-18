@@ -27,6 +27,7 @@ int main(int argc, char **argv)
     mdsys_t sys;
 
 #if defined (_OPENMP)
+#pragma omp parallel 
     sys.nthreads = omp_get_num_threads();
 #else
     sys.nthreads = 1;
@@ -192,9 +193,15 @@ if (sys.mpirank==0){
     free(sys.rx);
     free(sys.ry);
     free(sys.rz);
-    free(sys.vx);
-    free(sys.vy);
-    free(sys.vz);
+
+    free(sys.vx);  //corrupted size vs. prev_size
+    free(sys.vy);  //[celaptop:12689] *** Process received signal ***
+    free(sys.vz);  //[celaptop:12689] Signal: Aborted (6)
+                    //[celaptop:12689] Signal code:  (-6)
+
+    free(sys.cx);
+    free(sys.cy);
+    free(sys.cz);
     
 
     MPI_Finalize();

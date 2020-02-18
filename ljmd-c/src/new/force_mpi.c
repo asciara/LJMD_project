@@ -1,4 +1,7 @@
 #include <math.h> //pow,sqrt
+#if defined (_OPENMP)
+#include <omp.h>
+#endif
 #include "data.h"
 #include "prototypes.h"
 
