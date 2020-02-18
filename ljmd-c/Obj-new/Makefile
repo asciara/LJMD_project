@@ -2,20 +2,26 @@
 
 #turn on debug to activate
 debug := 
-openmp := 
-
+sequential := 
+perf :=
 ifdef sequential
 FOPENMP=
 else
 FOPENMP=-fopenmp
 endif
 
+ifdef perf
+FPERF=-fomit-frame-pointer
+else
+FPERF=
+endif
+
 SHELL=/bin/sh
 CC=gcc
 ifdef debug
-CFLAGS=-O0 -pg -g  $(FOPENMP)
+CFLAGS=-O0 -pg -g  $(FOPENMP) $(FPERF)
 else
-CFLAGS=-Wall -O3 -ffast-math $(FOPENMP)
+CFLAGS=-Wall -O3 -ffast-math $(FOPENMP) $(FPERF)
 endif
 
 LDLIBS=-lm
