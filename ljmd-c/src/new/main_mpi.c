@@ -186,7 +186,7 @@ int main(int argc, char **argv)
         	ekin(&sys);    
 	    }
 	    
-	    t = seconds() - t_tmp;
+	    t += seconds() - t_tmp;
     }
     
     
