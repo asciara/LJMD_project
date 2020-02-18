@@ -18,7 +18,8 @@ void force(mdsys_t *sys)
 {
     double rcsq;
     double c12,c6;
-
+    double half_box;
+    
     /* zero energy */
     double epot=0.0;
 
@@ -27,7 +28,8 @@ void force(mdsys_t *sys)
     c12 = 4.0 * sys->epsilon*pow(sys->sigma, 12.0);
     c6 = 4.0 * sys->epsilon*pow(sys->sigma, 6.0);
     rcsq = sys->rcut * sys->rcut;
-
+    half_box = 0.5*sys->box;
+    
     // rank 0 broadcasts all updated positions to other ranks
     MPI_Bcast(sys->rx,sys->natoms,MPI_DOUBLE,0,sys->mpicomm);
     MPI_Bcast(sys->ry,sys->natoms,MPI_DOUBLE,0,sys->mpicomm);
@@ -57,9 +59,9 @@ void force(mdsys_t *sys)
            for(int j= i+1 ; j < (sys->natoms); ++j) {
 
             /* get distance between particle i and j */
-            rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
-            ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
-            rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
+            rx=pbc(sys->rx[i] - sys->rx[j], half_box);
+            ry=pbc(sys->ry[i] - sys->ry[j], half_box);
+            rz=pbc(sys->rz[i] - sys->rz[j], half_box);
             rsq = rx*rx + ry*ry + rz*rz;
       
             /* compute force and energy if within cutoff */
@@ -79,7 +81,7 @@ void force(mdsys_t *sys)
                 cy[i] += ry*ffac;
                 cz[i] += rz*ffac;
                 
-		cx[j] -= rx*ffac;
+		        cx[j] -= rx*ffac;
                 cy[j] -= ry*ffac;
                 cz[j] -= rz*ffac;
 	    }
