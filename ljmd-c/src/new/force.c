@@ -50,6 +50,7 @@ void force(mdsys_t *sys)
        //for(i=0; i < (sys->natoms) -1 ; i+=sys->nthreads) {
        //    int ii = i + tid;
        //    if (ii >= (sys->natoms -1)) break;
+       
        for(i=tid; i < (sys->natoms) -1 ; i+=sys->nthreads) {
            for(int j= i+1 ; j < (sys->natoms); ++j) {
                

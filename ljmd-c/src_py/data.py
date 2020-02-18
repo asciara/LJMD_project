@@ -45,6 +45,8 @@ class mdsys_t(Structure):
         ("fx", c_double_p),
         ("fy", c_double_p),
         ("fz", c_double_p),
+        # OPENMP data
+        ("nthreads", c_int),
         # MPI data
         ("cx", c_double_p),
         ("cy", c_double_p),
@@ -52,5 +54,5 @@ class mdsys_t(Structure):
         ("mpicomm", MPI_Comm),
         ("nprocs", c_int),
         ("mpirank", c_int)#,
-        #("nsize", c_int)
+        #("nsize", c_int),
     ]

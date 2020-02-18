@@ -7,6 +7,7 @@ from output import *
 import velverlet
 from energy import *
 import time
+import os
 
 def create_system(input_contents):
    S=data.mdsys_t()
@@ -34,6 +35,13 @@ def create_system(input_contents):
 # read input file
 
 system,restfile,trajfile,ergfile,nprint=create_system(sys.stdin)
+
+if os.environ['OMP_NUM_THREADS'] != "":
+    system.nthreads = int(os.environ['OMP_NUM_THREADS'])
+else:
+    system.nthreads = 1
+
+print("num threads is %d" % system.nthreads)
 
 #f = open("../examples/argon_108.inp", "r")
 #system,restfile,trajfile,ergfile,nprint=create_system(f) 
@@ -63,15 +71,17 @@ system.fy = np_fy.ctypes.data_as(POINTER(c_double))
 system.fz = np_fz.ctypes.data_as(POINTER(c_double)) 
 '''
 
+length = system.natoms * system.nthreads
+
 system.rx = (c_double * system.natoms)()
 system.ry = (c_double * system.natoms)()
 system.rz = (c_double * system.natoms)()
 system.vx = (c_double * system.natoms)()
 system.vy = (c_double * system.natoms)()
 system.vz = (c_double * system.natoms)()
-system.fx = (c_double * system.natoms)()
-system.fy = (c_double * system.natoms)()
-system.fz = (c_double * system.natoms)()
+system.fx = (c_double * length)()
+system.fy = (c_double * length)()
+system.fz = (c_double * length)()
 
 # read restart
 
