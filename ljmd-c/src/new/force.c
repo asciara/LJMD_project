@@ -19,7 +19,7 @@ void force(mdsys_t *sys)
     double c12, c6;
 
     /* zero energy and forces */
-    sys->epot=0.0;
+    double epot=0.0;
 
     azzero(sys->fx,sys->natoms);
     azzero(sys->fy,sys->natoms);
@@ -30,7 +30,6 @@ void force(mdsys_t *sys)
     c6 = 4.0 * sys->epsilon*pow(sys->sigma, 6.0);
     rcsq = sys->rcut * sys->rcut;
 
-    double epot=0;
 #if defined (_OPENMP)
 #pragma omp parallel reduction(+:epot)
 #endif
@@ -38,7 +37,7 @@ void force(mdsys_t *sys)
        double rx,ry,rz;
        double *fx,*fy,*fz;
        double rsq,ffac;
-       double epot_priv=0;
+       double epot_priv=0.0;
        int i;
 #if defined (_OPENMP)
        int tid=omp_get_thread_num();
@@ -94,6 +93,6 @@ void force(mdsys_t *sys)
            sys->fz[j] += sys->fz[offs+j];
          }
        }
-    sys->epot  =epot;
     } // end of parallel region
+    sys->epot  =epot;
 }
