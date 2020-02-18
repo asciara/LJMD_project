@@ -27,6 +27,7 @@ struct _mdsys {
     int nprocs;
     int mpirank;
     int nsize;
+    int nthreads;
 
 };
 typedef struct _mdsys mdsys_t;
