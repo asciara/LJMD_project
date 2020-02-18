@@ -36,7 +36,7 @@ void force(mdsys_t *sys)
     
     R=(double *)malloc(3 * sys->natoms*sizeof(double));
        
-    for(int i=0; i<sys->natoms; i++){
+    for(int i=0; i<sys->natoms; ++i){
         int ii = 3 * i;
         R[ ii ] = sys->rx[i];
         R[ ii + 1 ] = sys->ry[i];
@@ -48,10 +48,6 @@ void force(mdsys_t *sys)
     double * F;  
     
     F=(double *)malloc(3*sys->nthreads*sys->natoms*sizeof(double));
-    
-    azzero(sys->fx,sys->natoms);
-    azzero(sys->fy,sys->natoms);
-    azzero(sys->fy,sys->natoms);
     
 #if defined (_OPENMP)
 #pragma omp parallel reduction(+:epot)
@@ -99,7 +95,7 @@ void force(mdsys_t *sys)
                ii = 3 * i;
                int jj = 3 * j;
                
-               //printf("HERE WE ARE BEFORE, %d, %d \n", tid, sys->nthreads);
+               //printf("HERE WE ARE BEFORE, %d, %d, %d, %d \n", tid, sys->nthreads, i, j);
                /* get distance between particle i and j */
                //printf("HERE WE ARE BEFORE, %d, %d \n", ii, jj);
                
@@ -148,8 +144,11 @@ void force(mdsys_t *sys)
        int fromidx = tid * i;
        int toidx = fromidx + i;
        if (toidx > sys->natoms) toidx = sys->natoms;
+       
        for (i=1; i < sys->nthreads; ++i) {
+       
          int offs = 3 * i *sys->natoms;
+         
          for (int j=fromidx; j < toidx; ++j) {
            //sys->fx[j] += sys->fx[offs+j];
            //sys->fy[j] += sys->fy[offs+j];
@@ -157,7 +156,7 @@ void force(mdsys_t *sys)
            int jj = 3 * j;
            sys->fx[j] += F[ offs + jj ];
            sys->fy[j] += F[ offs + jj + 1 ];
-           sys->fz[j] += F[ offs + jj +2 ];
+           sys->fz[j] += F[ offs + jj + 2 ];
          }
        }
     } // end of parallel region
