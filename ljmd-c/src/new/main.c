@@ -42,7 +42,6 @@ int main(int argc, char **argv)
 #else
     sys.nthreads = 1;
 #endif
-    printf("num threads is %d \n",sys.nthreads);
     /* read input file */
     if(get_a_line(stdin,line)) return 1;
     sys.natoms=atoi(line);
