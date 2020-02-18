@@ -6,7 +6,7 @@ from utilities import *
 from output import *
 import velverlet
 from energy import *
-import timeit
+import time
 
 def create_system(input_contents):
    S=data.mdsys_t()
@@ -124,12 +124,17 @@ output(system, erg, traj)
 
 # main MD loop 
 
+t = 0.0
+t_tmp=0.0
+
 for system.nfi in range(1, system.nsteps + 1):
 
     # write output, if requested 
     if ((system.nfi % nprint) == 0):
         output(system, erg, traj);
-
+    
+    t_tmp = time.time()
+    
     # propagate system and recompute energies 
     vso.velverlet(system);
     #vso.velverlet_first(system);
@@ -140,6 +145,10 @@ for system.nfi in range(1, system.nsteps + 1):
     #eso.ekin(system)
     ekin(system)
     
+    t += time.time() - t_tmp
+
+print("Evolve time: %.6f" %(t))
+
 #**************************************************
 
 # clean up: close files
