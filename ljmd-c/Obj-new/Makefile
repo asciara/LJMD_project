@@ -4,10 +4,10 @@
 debug := 
 openmp := 
 
-ifdef openmp
-FOPENMP=-fopenmp
-else
+ifdef sequential
 FOPENMP=
+else
+FOPENMP=-fopenmp
 endif
 
 SHELL=/bin/sh
