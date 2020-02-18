@@ -11,6 +11,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+#if defined (_OPENMP)
+#include <omp.h>
+#endif
+
 #include "data.h"
 #include "prototypes.h"
 
@@ -22,6 +26,12 @@ int main(int argc, char **argv)
     FILE *fp,*traj,*erg;
     mdsys_t sys;
 
+#if defined (_OPENMP)
+#pragma omp parallel 
+    sys.nthreads = omp_get_num_threads();
+#else
+    sys.nthreads = 1;
+#endif
     /* read input file */
     if(get_a_line(stdin,line)) return 1;
     sys.natoms=atoi(line);
@@ -54,9 +64,9 @@ int main(int argc, char **argv)
     sys.vy=(double *)malloc(sys.natoms*sizeof(double));
     sys.vz=(double *)malloc(sys.natoms*sizeof(double));
    
-    	sys.fx=(double *)malloc(sys.natoms*sizeof(double));
-    	sys.fy=(double *)malloc(sys.natoms*sizeof(double));
-	sys.fz=(double *)malloc(sys.natoms*sizeof(double));
+    sys.fx=(double *)malloc(sys.nthreads*sys.natoms*sizeof(double));
+    sys.fy=(double *)malloc(sys.nthreads*sys.natoms*sizeof(double));
+    sys.fz=(double *)malloc(sys.nthreads*sys.natoms*sizeof(double));
 
 
     /* read restart */

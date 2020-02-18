@@ -1,7 +1,7 @@
 #-*- Makefile -*-
 SHELL=/bin/sh
 CC=mpicc
-CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
+CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer -fopenmp
 LDLIBS=-lm
 OFLAGS=-D_MPI
 # list of source files

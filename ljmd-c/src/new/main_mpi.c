@@ -10,6 +10,11 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
+
+#if defined (_OPENMP)
+#include <omp.h>
+#endif
+
 #include "data.h"
 #include "prototypes.h"
 
@@ -20,6 +25,13 @@ int main(int argc, char **argv)
     char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
     FILE *fp,*traj,*erg;
     mdsys_t sys;
+
+#if defined (_OPENMP)
+#pragma omp parallel 
+    sys.nthreads = omp_get_num_threads();
+#else
+    sys.nthreads = 1;
+#endif
 
     sys.mpicomm=MPI_COMM_WORLD;
 
@@ -95,10 +107,10 @@ int main(int argc, char **argv)
     sys.vy=(double *)malloc(sys.natoms*sizeof(double));
     sys.vz=(double *)malloc(sys.natoms*sizeof(double));
    
-    // Buffer for Broadcast
-    sys.cx=(double *)malloc(sys.natoms*sizeof(double));
-    sys.cy=(double *)malloc(sys.natoms*sizeof(double));
-    sys.cz=(double *)malloc(sys.natoms*sizeof(double));
+    // MPI-process Buffer for force array (only first natoms elements will be reduced)
+    sys.cx=(double *)malloc(sys.nthreads*sys.natoms*sizeof(double));
+    sys.cy=(double *)malloc(sys.nthreads*sys.natoms*sizeof(double));
+    sys.cz=(double *)malloc(sys.nthreads*sys.natoms*sizeof(double));
 	if (sys.mpirank==0){
     		sys.fx=(double *)malloc(sys.natoms*sizeof(double));
     		sys.fy=(double *)malloc(sys.natoms*sizeof(double));
@@ -181,10 +193,14 @@ if (sys.mpirank==0){
     free(sys.rx);
     free(sys.ry);
     free(sys.rz);
-    free(sys.vx);
-    free(sys.vy);
-    free(sys.vz);
-    
+
+    free(sys.vx);                                
+    free(sys.vy);                                                    
+    free(sys.vz);                                        
+
+    free(sys.cx);
+    free(sys.cy);
+    free(sys.cz);
 
     MPI_Finalize();
     return 0;
