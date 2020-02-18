@@ -27,11 +27,12 @@ int main(int argc, char **argv)
     mdsys_t sys;
 
 #if defined (_OPENMP)
+#pragma omp parallel 
     sys.nthreads = omp_get_num_threads();
 #else
     sys.nthreads = 1;
 #endif
-
+    printf("num threads is %d \n",sys.nthreads);
     /* read input file */
     if(get_a_line(stdin,line)) return 1;
     sys.natoms=atoi(line);
