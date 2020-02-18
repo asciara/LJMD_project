@@ -53,9 +53,9 @@ void force(mdsys_t *sys)
        cz=sys->cz + (tid*sys->natoms); azzero(cz,sys->natoms); 
 
        for(i=sys->mpirank; i < sys->natoms -1 ; i+=sys->nprocs) {
-         if(((i-sys->mpirank)/sys->nprocs)%sys->nthreads!=tid) continue; // divide work among threads
-           for(int j= i+1 ; j < (sys->natoms); ++j) {
-
+//         if(((i-sys->mpirank)/sys->nprocs)%sys->nthreads!=tid) continue; // divide work among threads
+          #pragma omp for schedule(static, 2) 
+          for(int j= i+1 ; j < (sys->natoms); ++j) {
             /* get distance between particle i and j */
             rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
             ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
