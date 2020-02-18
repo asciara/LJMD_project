@@ -23,7 +23,7 @@ else
 CFLAGS=-Wall -O3 -ffast-math $(FOPENMP) $(FPERF)
 endif
 LDLIBS=-lm
-LIBCOMPIL_FLAGS  = -shared
+LIBCOMPIL_FLAGS  = -shared $(FOPENMP) 
 OFLAGS=-D_MPI
 # list of source files
 SRC=main_mpi.c \
