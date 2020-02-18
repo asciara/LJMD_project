@@ -1,8 +1,8 @@
 from ctypes import *
+import sys
+from utilities import get_a_line
+from mpi4py import MPI
 
-# generic file- or pathname buffer length 
-
-BLEN = 200
 
 # a few physical constants 
 
@@ -15,6 +15,13 @@ mvsq2e = 2390.05736153349
 
 c_double_p = POINTER(c_double)
 
+# MAY BE WRONG
+
+if MPI._sizeof(MPI.Comm) == sizeof(c_int):
+    MPI_Comm = c_int
+else:
+    MPI_Comm = c_void_p
+    
 class mdsys_t(Structure):
     _fields_ = [
         ("natoms", c_int),
@@ -37,15 +44,13 @@ class mdsys_t(Structure):
         ("vz", c_double_p),
         ("fx", c_double_p),
         ("fy", c_double_p),
-        ("fz", c_double_p)
+        ("fz", c_double_p),
+        # MPI data
+        ("cx", c_double_p),
+        ("cy", c_double_p),
+        ("cz", c_double_p),
+        ("mpicomm", MPI_Comm),
+        ("nprocs", c_int),
+        ("mpirank", c_int)#,
+        #("nsize", c_int)
     ]
-
-#struct _mdsys {
-#    int natoms,nfi,nsteps;
-#    double dt, mass, epsilon, sigma, box, rcut;
-#    double ekin, epot, temp;
-#    double *rx, *ry, *rz;
-#    double *vx, *vy, *vz;
-#    double *fx, *fy, *fz;
-#};
-#typedef struct _mdsys mdsys_t; 
