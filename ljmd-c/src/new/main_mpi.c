@@ -219,15 +219,13 @@ if (sys.mpirank==0){
     free(sys.ry);
     free(sys.rz);
 
-    free(sys.vx);  //corrupted size vs. prev_size
-    free(sys.vy);  //[celaptop:12689] *** Process received signal ***
-    free(sys.vz);  //[celaptop:12689] Signal: Aborted (6)
-                    //[celaptop:12689] Signal code:  (-6)
+    free(sys.vx);                                
+    free(sys.vy);                                                    
+    free(sys.vz);                                        
 
     free(sys.cx);
     free(sys.cy);
     free(sys.cz);
-    
 
     MPI_Finalize();
     return 0;
