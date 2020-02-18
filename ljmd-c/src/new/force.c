@@ -16,15 +16,11 @@ static inline __attribute__((always_inline)) double pbc(double x, const double b
 void force(mdsys_t *sys) 
 {
     double rcsq;
-    double c12, c6;
+    double c12,c6;
 
     /* zero energy and forces */
     double epot=0.0;
 
-    azzero(sys->fx,sys->natoms);
-    azzero(sys->fy,sys->natoms);
-    azzero(sys->fz,sys->natoms);
-    
     // define temporary variables for avoiding using power and sqrt in cycle
     c12 = 4.0 * sys->epsilon*pow(sys->sigma, 12.0);
     c6 = 4.0 * sys->epsilon*pow(sys->sigma, 6.0);
@@ -46,10 +42,8 @@ void force(mdsys_t *sys)
 #endif
        fx=sys->fx + (tid*sys->natoms); azzero(fx,sys->natoms);
        fy=sys->fy + (tid*sys->natoms); azzero(fy,sys->natoms);
-       fz=sys->fz + (tid*sys->natoms); azzero(fz,sys->natoms);
-       //for(i=0; i < (sys->natoms) -1 ; i+=sys->nthreads) {
-       //    int ii = i + tid;
-       //    if (ii >= (sys->natoms -1)) break;
+       fz=sys->fz + (tid*sys->natoms); azzero(fz,sys->natoms);  
+
        for(i=tid; i < (sys->natoms) -1 ; i+=sys->nthreads) {
            for(int j= i+1 ; j < (sys->natoms); ++j) {
                
