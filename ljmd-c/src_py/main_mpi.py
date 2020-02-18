@@ -57,11 +57,11 @@ system.nprocs = comm.Get_size()
 
 if (system.mpirank == 0):
 
-    #restfile,trajfile,ergfile,nprint=create_system(system, sys.stdin)
+    restfile,trajfile,ergfile,nprint=create_system(system, sys.stdin)
 
-    f = open("../examples/argon_2916.inp", "r")
-    restfile,trajfile,ergfile,nprint=create_system(system, f) 
-    f.close()
+    #f = open("../examples/argon_2916.inp", "r")
+    #restfile,trajfile,ergfile,nprint=create_system(system, f) 
+    #f.close()
     
 system.dt = comm.bcast(system.dt, root = 0)
 system.nsteps = comm.bcast(system.nsteps, root = 0)

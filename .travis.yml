@@ -1,6 +1,15 @@
-language: c
-before_install:
-  - sudo apt-get install openmpi-bin libopenmpi-dev 
-script: 
-  - cd ljmd-c && make check && make test
+matrix:
+  include:
+    - language: c
+      before_install:
+        - sudo apt-get install openmpi-bin libopenmpi-dev 
+      script: 
+        - cd ljmd-c 
+        - make check 
+        - make test
+    
+    - language: python
+      python: 3.7
+      script:
+        - mpiexec -np 1 python3 ./src_py/main_mpi.py < ./examples/argon_108.inp
 
