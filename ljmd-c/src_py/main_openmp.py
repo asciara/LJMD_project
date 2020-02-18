@@ -36,12 +36,11 @@ def create_system(input_contents):
 
 system,restfile,trajfile,ergfile,nprint=create_system(sys.stdin)
 
-if os.environ['OMP_NUM_THREADS'] != "":
+try:
     system.nthreads = int(os.environ['OMP_NUM_THREADS'])
-else:
-    system.nthreads = 1
-
-print("num threads is %d" % system.nthreads)
+except KeyError:
+    print("ERROR: Please set the environment variable OMP_NUM_THREADS")
+    sys.exit(1)
 
 #f = open("../examples/argon_108.inp", "r")
 #system,restfile,trajfile,ergfile,nprint=create_system(f) 
