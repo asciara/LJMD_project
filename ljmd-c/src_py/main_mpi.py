@@ -57,11 +57,11 @@ system.nprocs = comm.Get_size()
 
 if (system.mpirank == 0):
 
-    #restfile,trajfile,ergfile,nprint=create_system(system, sys.stdin)
+    restfile,trajfile,ergfile,nprint=create_system(system, sys.stdin)
 
-    f = open("../examples/argon_2916.inp", "r")
-    restfile,trajfile,ergfile,nprint=create_system(system, f) 
-    f.close()
+    #f = open("../examples/argon_2916.inp", "r")
+    #restfile,trajfile,ergfile,nprint=create_system(system, f) 
+    #f.close()
     
 system.dt = comm.bcast(system.dt, root = 0)
 system.nsteps = comm.bcast(system.nsteps, root = 0)
@@ -71,6 +71,8 @@ system.natoms = comm.bcast(system.natoms, root = 0)
 system.sigma = comm.bcast(system.sigma, root = 0)
 system.epsilon = comm.bcast(system.epsilon, root = 0)
 system.mass = comm.bcast(system.mass, root = 0)
+
+system.nthreads = 1
 
 # allocate memory
 
@@ -154,7 +156,7 @@ if system.mpirank == 0:
     #eso.ekin(system)
     ekin(system)
 
-    erg = open(restfile, "w")
+    erg = open(ergfile, "w")
     traj = open(trajfile, "w")
 
     print("Starting simulation with %d atoms for %d steps." % (system.natoms, system.nsteps));

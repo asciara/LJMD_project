@@ -12,6 +12,7 @@ endif
 
 ifdef perf
 FPERF=-fomit-frame-pointer
+FPERF +=-g
 else
 FPERF=
 endif
@@ -21,7 +22,7 @@ CC=gcc
 ifdef debug
 CFLAGS=-O0 -pg -g  $(FOPENMP) $(FPERF)
 else
-CFLAGS=-Wall -O3 -ffast-math $(FOPENMP) $(FPERF)
+CFLAGS=-Wall -O3 -ffast-math -march=native -mavx2  $(FOPENMP) $(FPERF)
 endif
 
 LDLIBS=-lm
@@ -45,7 +46,8 @@ EXE=main.x
 default: ../$(EXE)
 
 clean:
-	rm -f *.mod *.o *.so ../main.x
+	rm -f *.mod *.o *.so ../main.x ../src_py/argon_108.* ../src_py/argon_2916.*
+	rm -rf ../src_py/__pycache__
 
 # linker rule
 ../$(EXE): $(OBJ)

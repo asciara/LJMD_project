@@ -35,6 +35,8 @@ def create_system(input_contents):
 
 system,restfile,trajfile,ergfile,nprint=create_system(sys.stdin)
 
+system.nthreads = 1
+
 #f = open("../examples/argon_108.inp", "r")
 #system,restfile,trajfile,ergfile,nprint=create_system(f) 
 #f.close()
@@ -110,7 +112,7 @@ fso.force(system)
 #eso.ekin(system)
 ekin(system)
 
-erg = open(restfile, "w")
+erg = open(ergfile, "w")
 traj = open(trajfile, "w")
 
 print("Starting simulation with %d atoms for %d steps." % (system.natoms, system.nsteps));
