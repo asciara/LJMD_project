@@ -4,6 +4,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#if defined (_OPENMP)
+#include <omp.h>
+#endif
+
 #include "data.h"
 #include "prototypes.h"
 #include <math.h>
@@ -15,13 +20,20 @@ int main(int argc, char **argv) {
     FILE *fp;
     mdsys_t sys;
 
+#if defined (_OPENMP)
+#pragma omp parallel 
+    sys.nthreads = omp_get_num_threads();
+#else
+    sys.nthreads = 1;
+#endif
+
     sys.mpicomm=MPI_COMM_WORLD;
 
     MPI_Init(&argc,&argv);
     MPI_Comm_rank(sys.mpicomm,&sys.mpirank);
     MPI_Comm_size(sys.mpicomm,&sys.nprocs);
 
-    sys.nsize=sys.natoms/sys.nprocs;
+    //sys.nsize=sys.natoms/sys.nprocs;
 
     /* read input file */
     sys.natoms=108;
@@ -36,9 +48,9 @@ int main(int argc, char **argv) {
     sys.ry=(double *)malloc(sys.natoms*sizeof(double));
     sys.rz=(double *)malloc(sys.natoms*sizeof(double));
     
-    sys.cx=(double *)malloc(sys.natoms*sizeof(double));
-    sys.cy=(double *)malloc(sys.natoms*sizeof(double));
-    sys.cz=(double *)malloc(sys.natoms*sizeof(double));
+    sys.cx=(double *)malloc(sys.nthreads*sys.natoms*sizeof(double));
+    sys.cy=(double *)malloc(sys.nthreads*sys.natoms*sizeof(double));
+    sys.cz=(double *)malloc(sys.nthreads*sys.natoms*sizeof(double));
     if (sys.mpirank==0){
     	sys.fx=(double *)malloc(sys.natoms*sizeof(double));
         sys.fy=(double *)malloc(sys.natoms*sizeof(double));
@@ -74,6 +86,22 @@ int main(int argc, char **argv) {
     		}
     		printf("\n");
 	}
-	MPI_Finalize();
+
+    /* clean up: close files, free memory */
+    
+if (sys.mpirank==0){
+    free(sys.fx);
+    free(sys.fy);
+    free(sys.fz);
+}
+    free(sys.rx);
+    free(sys.ry);
+    free(sys.rz);
+
+    free(sys.cx);
+    free(sys.cy);
+    free(sys.cz);
+
+    MPI_Finalize();
 }
 

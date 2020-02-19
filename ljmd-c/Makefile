@@ -39,4 +39,8 @@ check: new mpi
 
 	$(MAKE) $(MFLAGS) -C examples check
 	$(MAKE) $(MFLAGS) -C examples checkmpi
+	
+check_python: new mpi
 
+	$(MAKE) $(MFLAGS) -C examples check_python
+	$(MAKE) $(MFLAGS) -C examples checkmpi_python
