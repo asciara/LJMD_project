@@ -180,7 +180,6 @@ if system.mpirank == 0:
 t = 0.0
 final_t=0.0
 
-
 for system.nfi in range(1, system.nsteps + 1):
     
     # write output, if requested 
@@ -203,7 +202,6 @@ for system.nfi in range(1, system.nsteps + 1):
         ekin(system)
     
     t += time.time() - t_tmp
-
 
 final_t = comm.reduce(t, op=MPI.MAX, root = 0)
 
