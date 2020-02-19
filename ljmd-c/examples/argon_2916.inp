@@ -7,6 +7,6 @@
 argon_2916.rest   # restart
 argon_2916.xyz    # trajectory
 argon_2916.dat    # energies
-200               # nr MD steps
+1000              # nr MD steps
 5.0               # MD time step (in fs)
 10                # output print frequency
