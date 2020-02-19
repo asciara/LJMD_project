@@ -15,6 +15,16 @@ For the first part, we wrote a python script that acted as an interface to the C
 
 For the second part, distributed memory parallelization was added by means of MPI directives into the code while shared memory multi-threading was enabled in a peculiar, more performant but also more memory consuming way using OpenMP pragmas. As for the optimizations, we implemented the in-lining of frequently called functions, re-formulation of expensive mathematical operations, vectorization and others.
 
+#### 3. Timing parallel application
+
+We run our hybrid C code on the Galileo cluster in Bologna. The times obtained for Argon with 2916 atoms are summarized in the following plot:
+
+![](Timing.png)
+
+The timings seems to scale well across various values for number of MPI processes and OPENMP threads. The best performance obtained reached a speedup of **x50.7** with respect to the serial code run with appropriate gcc flags.
+
+Unfortunately we did not have time to run the Python code on the cluster, but the timing on our laptops and Travis are not too far from the C results.
+
 #### 4. Optimization
 
 
