@@ -1,10 +1,7 @@
-import numpy as np
 import sys
-from ctypes import *
 import data
 from utilities import *
 from output import *
-import velverlet
 from energy import *
 import time
 
@@ -27,43 +24,23 @@ def create_system(input_contents):
           elif(count==11): nprint    = int(value)
    return S,restfile,trajfile,ergfile,nprint
 
-#******************************************************************************
+#****************************************************************************************
 
 # MAIN
 
-# read input file
+# read file from stdin
 
 system,restfile,trajfile,ergfile,nprint=create_system(sys.stdin)
 
-system.nthreads = 1
+# otherwise read input file directly
 
 #f = open("../examples/argon_108.inp", "r")
 #system,restfile,trajfile,ergfile,nprint=create_system(f) 
 #f.close()
 
+system.nthreads = 1
+
 # allocate memory
-
-'''
-np_rx = np.zeros((system.natoms),dtype=np.float64) 
-np_ry = np.zeros((system.natoms),dtype=np.float64)
-np_rz = np.zeros((system.natoms),dtype=np.float64)
-np_vx = np.zeros((system.natoms),dtype=np.float64)
-np_vy = np.zeros((system.natoms),dtype=np.float64)
-np_vz = np.zeros((system.natoms),dtype=np.float64)
-np_fx = np.zeros((system.natoms),dtype=np.float64)
-np_fy = np.zeros((system.natoms),dtype=np.float64)
-np_fz = np.zeros((system.natoms),dtype=np.float64)
-
-system.rx = np_rx.ctypes.data_as(POINTER(c_double))
-system.ry = np_ry.ctypes.data_as(POINTER(c_double)) 
-system.rz = np_rz.ctypes.data_as(POINTER(c_double)) 
-system.vx = np_vx.ctypes.data_as(POINTER(c_double)) 
-system.vy = np_vy.ctypes.data_as(POINTER(c_double)) 
-system.vz = np_vz.ctypes.data_as(POINTER(c_double))
-system.fx = np_fx.ctypes.data_as(POINTER(c_double)) 
-system.fy = np_fy.ctypes.data_as(POINTER(c_double)) 
-system.fz = np_fz.ctypes.data_as(POINTER(c_double)) 
-'''
 
 system.rx = (c_double * system.natoms)()
 system.ry = (c_double * system.natoms)()
@@ -80,7 +57,6 @@ system.fz = (c_double * system.natoms)()
 fp = open("../examples/" + restfile, "r")
 
 for i in range(system.natoms):
-    #print(fp.readline().split())
     rx, ry, rz = fp.readline().split()
     system.rx[i] = c_double(float(rx))
     system.ry[i] = c_double(float(ry))
@@ -100,16 +76,12 @@ system.nfi = 0
 fso = CDLL("../Obj-new/libforce.so" )
 fso.force.argtypes =[POINTER(data.mdsys_t)] #Structure
 
-#eso = CDLL("../Obj-new/libenergy.so" )
-#eso.ekin.argtypes =[POINTER(data.mdsys_t)] #Structure
-
 vso = CDLL("../Obj-new/libvelverlet.so" )
 vso.velverlet.argtypes =[POINTER(data.mdsys_t)] #Structure
 vso.velverlet_first.argtypes =[POINTER(data.mdsys_t)] #Structure
 vso.velverlet_second.argtypes =[POINTER(data.mdsys_t)] #Structure
 
 fso.force(system)
-#eso.ekin(system)
 ekin(system)
 
 erg = open(ergfile, "w")
@@ -120,12 +92,12 @@ print("     NFI            TEMP            EKIN                 EPOT            
 
 output(system, erg, traj)
 
-#**************************************************
+#****************************************************************************************
 
 # main MD loop 
 
 t = 0.0
-t_tmp=0.0
+t_tmp = 0.0
 
 for system.nfi in range(1, system.nsteps + 1):
 
@@ -137,19 +109,13 @@ for system.nfi in range(1, system.nsteps + 1):
     
     # propagate system and recompute energies 
     vso.velverlet(system);
-    #vso.velverlet_first(system);
-    ##velverlet.first(system)
-    #fso.force(system)
-    ##velverlet.second(system)
-    #vso.velverlet_second(system);
-    #eso.ekin(system)
     ekin(system)
     
     t += time.time() - t_tmp
 
 print("Evolve time: %.6f" %(t))
 
-#**************************************************
+#****************************************************************************************
 
 # clean up: close files
     
@@ -158,4 +124,4 @@ print("Simulation Done.");
 erg.close()
 traj.close()
 
-#******************************************************************************
+#****************************************************************************************

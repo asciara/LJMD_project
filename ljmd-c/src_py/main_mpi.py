@@ -1,22 +1,7 @@
-'''
-MPIparallel=False
-if(MPIparallel):
-  from mpi4py import MPI
-  comm  = MPI.COMM_WORLD
-  rank  = comm.Get_rank()
-  nranks =comm.size
-else:
-  nranks=1
-  rank=0
-'''
-
-import numpy as np
 import sys
-from ctypes import *
 from data import *
 from utilities import *
 from output import *
-import velverlet
 from energy import *
 import time
 from mpi4py import MPI
@@ -39,11 +24,9 @@ def create_system(S, input_contents):
           elif(count==11): nprint    = int(value)
    return restfile,trajfile,ergfile,nprint
 
-#******************************************************************************
+#****************************************************************************************
 
 # MAIN
-
-# read input file
 
 system = mdsys_t()
 
@@ -56,8 +39,12 @@ system.mpirank  = comm.Get_rank()
 system.nprocs = comm.Get_size()
 
 if (system.mpirank == 0):
+    
+    # read file from stdin
 
     restfile,trajfile,ergfile,nprint=create_system(system, sys.stdin)
+    
+    # otherwise read input file directly
 
     #f = open("../examples/argon_2916.inp", "r")
     #restfile,trajfile,ergfile,nprint=create_system(system, f) 
@@ -75,28 +62,6 @@ system.mass = comm.bcast(system.mass, root = 0)
 system.nthreads = 1
 
 # allocate memory
-
-'''
-np_rx = np.zeros((system.natoms),dtype=np.float64) 
-np_ry = np.zeros((system.natoms),dtype=np.float64)
-np_rz = np.zeros((system.natoms),dtype=np.float64)
-np_vx = np.zeros((system.natoms),dtype=np.float64)
-np_vy = np.zeros((system.natoms),dtype=np.float64)
-np_vz = np.zeros((system.natoms),dtype=np.float64)
-np_fx = np.zeros((system.natoms),dtype=np.float64)
-np_fy = np.zeros((system.natoms),dtype=np.float64)
-np_fz = np.zeros((system.natoms),dtype=np.float64)
-
-system.rx = np_rx.ctypes.data_as(POINTER(c_double))
-system.ry = np_ry.ctypes.data_as(POINTER(c_double)) 
-system.rz = np_rz.ctypes.data_as(POINTER(c_double)) 
-system.vx = np_vx.ctypes.data_as(POINTER(c_double)) 
-system.vy = np_vy.ctypes.data_as(POINTER(c_double)) 
-system.vz = np_vz.ctypes.data_as(POINTER(c_double))
-system.fx = np_fx.ctypes.data_as(POINTER(c_double)) 
-system.fy = np_fy.ctypes.data_as(POINTER(c_double)) 
-system.fz = np_fz.ctypes.data_as(POINTER(c_double)) 
-'''
 
 system.rx = (c_double * system.natoms)()
 system.ry = (c_double * system.natoms)()
@@ -142,9 +107,6 @@ system.nfi = 0
 fso = CDLL("../Obj-mpi/libforce_mpi.so" )
 fso.force.argtypes =[POINTER(mdsys_t)] #Structure
 
-#eso = CDLL("../Obj-new/libenergy.so" )
-#eso.ekin.argtypes =[POINTER(mdsys_t)] #Structure
-
 vso = CDLL("../Obj-mpi/libvelverlet.so" )
 vso.velverlet.argtypes =[POINTER(mdsys_t)] #Structure
 vso.velverlet_first.argtypes =[POINTER(mdsys_t)] #Structure
@@ -153,7 +115,6 @@ vso.velverlet_second.argtypes =[POINTER(mdsys_t)] #Structure
 fso.force(system)
 
 if system.mpirank == 0:
-    #eso.ekin(system)
     ekin(system)
 
     erg = open(ergfile, "w")
@@ -164,14 +125,12 @@ if system.mpirank == 0:
 
     output(system, erg, traj)
 
-#**************************************************
+#****************************************************************************************
 
 # main MD loop with timing
-
  
 t = 0.0
-final_t=0.0
-
+final_t = 0.0
 
 for system.nfi in range(1, system.nsteps + 1):
 
@@ -184,26 +143,22 @@ for system.nfi in range(1, system.nsteps + 1):
     # propagate system and recompute energies 
     if system.mpirank == 0:
         vso.velverlet_first(system);
-        #velverlet.first(system)
     
     fso.force(system)
     
     if system.mpirank == 0:
-        #velverlet.second(system)
         vso.velverlet_second(system);
-        #eso.ekin(system)
         ekin(system)
     
     t += time.time() - t_tmp
 
-
-final_t = comm.reduce(t, op=MPI.MAX, root = 0)
+final_t = comm.reduce(t, op = MPI.MAX, root = 0)
 
 print("Time proc %d: %.6f" %(system.mpirank, t))
 if system.mpirank == 0:
     print("Evolve time: %.6f" %(final_t))
     
-#**************************************************
+#****************************************************************************************
 
 # clean up: close files
 
@@ -213,4 +168,4 @@ if system.mpirank == 0:
     erg.close()
     traj.close()
 
-#******************************************************************************
+#****************************************************************************************
