@@ -52,10 +52,8 @@ void force(mdsys_t *sys)
        cy=sys->cy + (tid*sys->natoms); azzero(cy,sys->natoms); 
        cz=sys->cz + (tid*sys->natoms); azzero(cz,sys->natoms); 
 
-	printf("check3\n");
        for(i=sys->mpirank; i < sys->npairs ; i+=sys->nprocs) {
          if(((i-sys->mpirank)/sys->nprocs)%sys->nthreads!=tid) continue; // divide work among threads
-         printf("check5\n");
          cell_t *c1, *c2;
 
 	 c1= sys->clist + sys->plist[2*i];
@@ -64,7 +62,6 @@ void force(mdsys_t *sys)
 	 for(int j= 0 ; j < c1->natoms; ++j) {
 	    int ii=c1->idxlist[j];
 
-	    printf("check6\n");
 	    double rx1=sys->rx[ii];
 	    double ry1=sys->ry[ii];
 	    double rz1=sys->rz[ii];

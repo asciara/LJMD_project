@@ -126,7 +126,6 @@ int main(int argc, char **argv)
     }
     /* initialize forces, energies and lists.*/
    
-   printf("check5\n");
     if (sys.mpirank==0){
  	double mod=fmod(sys.box,sys.rcut);                  
  	double div=sys.box/sys.rcut;
@@ -134,13 +133,10 @@ int main(int argc, char **argv)
  	                                                     
  	int N=sys.box/cell_len;
  	sys.N=N;
-	printf("check4\n");
  	// Allocate cell list
 	sys.clist= (cell_t *) malloc(N*N*N*sizeof(cell_t));
 
-	printf("check8\n");
 	build_pairs(&sys); // Create pairs list
-	printf("check3\n");
 	fill_cell_list(&sys,1);
     
 	print_cell_list(&sys);
@@ -150,7 +146,6 @@ int main(int argc, char **argv)
 	}
 	printf("\n");
     }
-    	printf("check\n");
 	sys.nfi=0;
 	force(&sys);
 
@@ -173,7 +168,6 @@ int main(int argc, char **argv)
     /**************************************************/
     /* main MD loop */
     for(sys.nfi=1; sys.nfi <= sys.nsteps; ++sys.nfi) {
-
         /* write output, if requested */
         if ((sys.nfi % nprint) == 0 && sys.mpirank==0)
             output(&sys, erg, traj);
