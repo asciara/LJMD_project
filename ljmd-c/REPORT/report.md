@@ -21,7 +21,7 @@ We run our hybrid C code on the Galileo cluster in Bologna. The times obtained f
 
 ![](Timing.png)
 
-The timings seems to scale well across various values for number of MPI processes and OPENMP threads. The best performance obtained reached a speedup of **x50.7** with respect to the serial code run with appropriate gcc flags.
+The timings seems to scale well across various values for number of MPI processes and OPENMP threads. The best performance obtained reached a speedup of **x50.7** with respect to the serial code run with best gcc flags and approximately **x150 speedup** with respect to the serial code compiled with -O0.
 
 Unfortunately we did not have time to run the Python code on the cluster, but the timing on our laptops and Travis are not too far from the C results.
 
@@ -147,7 +147,7 @@ INLINING, flags -O3 -ffast-math
 
 *108 atoms*
 
-![inlining](/home/alberto/MHPC_19_20/report/inlining.png)
+![inlining](inlining.png)
 
 - inlined function ```pbc``` by moving directly code to ```force.c``` file containing force computation, adding ```static inline __attribute__((always_inline))``` intrinsic.
 - inlining is clearly succesful from perf output.
@@ -176,7 +176,7 @@ NEWTON, flags -O3 -ffast-math
 
 *108 atoms*
 
-![newton](/home/alberto/MHPC_19_20/report/newton.png)
+![newton](newton.png)
 
 - reached **x10 speedup**.
 - From now on leave coarse grain perf description. At this stage only concentrate on force to obtain further speedup.
