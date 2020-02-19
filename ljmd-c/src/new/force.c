@@ -40,12 +40,22 @@ void force(mdsys_t *sys)
         R[ ii + 2 ] = sys->rz[i];   
     }
     
+    // adding
+    
+    double * F;  
+    
+    F=(double *)malloc(3*sys->nthreads*sys->natoms*sizeof(double));
+    
+    azzero(sys->fx,sys->natoms);
+    azzero(sys->fy,sys->natoms);
+    azzero(sys->fz,sys->natoms);
+    
 #if defined (_OPENMP)
 #pragma omp parallel reduction(+:epot)
 #endif
     {
        double r[3];
-       double *fx,*fy,*fz;
+       double *f;
        double rsq,ffac;
        double epot_priv=0.0;
        int i;
@@ -53,10 +63,10 @@ void force(mdsys_t *sys)
        int tid=omp_get_thread_num();
 #else
        int tid=0;
-#endif
-       fx=sys->fx + (tid*sys->natoms); azzero(fx,sys->natoms);
-       fy=sys->fy + (tid*sys->natoms); azzero(fy,sys->natoms);
-       fz=sys->fz + (tid*sys->natoms); azzero(fz,sys->natoms);  
+#endif 
+       int global_id = tid * sys->natoms;
+       f = F + (3 * tid * sys->natoms);
+       azzero(f, 3 * sys->natoms);  
 
        for(i=tid; i < (sys->natoms) -1 ; i+=sys->nthreads) {
            for(int j= i+1 ; j < (sys->natoms); ++j) {
@@ -77,12 +87,12 @@ void force(mdsys_t *sys)
                    ffac = (12.0 * c12 * r6 -6.0*c6) * r6 *rinv;
                    epot_priv += r6 *(c12*r6 -c6);
       
-                   fx[i] += r[0]*ffac;
-                   fy[i] += r[1]*ffac;
-                   fz[i] += r[2]*ffac;
-                   fx[j] -= r[0]*ffac;
-           	       fy[j] -= r[1]*ffac;
-           	       fz[j] -= r[2]*ffac;
+                   f[ ii ] += r[0]*ffac;
+           	       f[ ii + 1 ] += r[1]*ffac;
+           	       f[ ii + 2 ] += r[2]*ffac;
+           	       f[ jj ] -= r[0]*ffac;
+           	       f[ jj + 1 ] -= r[1]*ffac;
+           	       f[ jj + 2 ] -= r[2]*ffac;
                }
            }
        }
@@ -94,14 +104,20 @@ void force(mdsys_t *sys)
        int fromidx = tid * i;
        int toidx = fromidx + i;
        if (toidx > sys->natoms) toidx = sys->natoms;
-       for (i=1; i < sys->nthreads; ++i) {
-         int offs = i*sys->natoms;
-         for (int j=fromidx; j < toidx; ++j) {
-           sys->fx[j] += sys->fx[offs+j];
-           sys->fy[j] += sys->fy[offs+j];
-           sys->fz[j] += sys->fz[offs+j];
+       
+       // NOTE: THIS IS A DIFFERENT i!!!!!!!!!!!!!!!
+       for (i=0; i < sys->nthreads; ++i) {
+         int offs =  3 * i* sys->natoms;
+         
+         for (int j=fromidx; j < toidx; ++j) {  
+           int jj = 3 * j;
+           sys->fx[j] +=  F[ offs + jj];
+           sys->fy[j] +=  F[ offs + jj + 1];
+           sys->fz[j] +=  F[ offs + jj + 2];
+         
          }
        }
     } // end of parallel region
-    sys->epot  =epot;
+    
+    sys->epot = epot;
 }
