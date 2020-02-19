@@ -31,7 +31,9 @@ void velverlet(mdsys_t *sys);
 void output(mdsys_t *sys, FILE *erg, FILE *traj);
 
 
-void fill_cell_list(mdsys_t * sys);
+void fill_cell_list(mdsys_t * sys,_Bool first);
+
+void build_pairs(mdsys_t * sys);
 
 void print_cell_list(mdsys_t * sys);
 #endif

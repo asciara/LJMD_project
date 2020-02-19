@@ -28,11 +28,12 @@ clean:
 	$(MAKE) $(MFLAGS) -C examples clean
 	$(MAKE) $(MFLAGS) -C Obj-new clean
 	$(MAKE) $(MFLAGS) -C Obj-mpi clean
+	$(MAKE) $(MFLAGS) -C Obj-CLmpi clean
 	$(MAKE) $(MFLAGS) -C unit_testing/force clean
 	$(MAKE) $(MFLAGS) -C unit_testing/verlet clean
 	$(MAKE) $(MFLAGS) -C unit_testing/energy clean
 	$(MAKE) $(MFLAGS) -C unit_testing/utilities clean
-
+	rm -f *.x *.dat *.xyz
 
 
 check: new mpi

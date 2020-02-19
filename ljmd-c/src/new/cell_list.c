@@ -3,16 +3,20 @@
 #include "data.h"
 #include <math.h>
 
-void fill_cell_list(mdsys_t *sys){
-	double mod=fmod(sys->box,sys->rcut);
+void fill_cell_list(mdsys_t *sys, _Bool first){
+	/*double mod=fmod(sys->box,sys->rcut);
 	double div=sys->box/sys->rcut;
 	double cell_len=sys->rcut + (double) mod/div;
 
 	int N=sys->box/cell_len;
 	sys->N=N;
 	printf("cell_len: %f	/ N: %d\n",cell_len,N);
-	sys->clist= (cell_t *) malloc(N*N*N*sizeof(cell_t));
+	sys->clist= (cell_t *) malloc(N*N*N*sizeof(cell_t));*/
+	int N=sys->N;
+	double cell_len=(double) sys->box/N;
 	for (int i=0;i<N*N*N;i++){
+		if (!first) free(sys->clist[i].idxlist);
+		
 		sys->clist[i].check=0;
 		sys->clist[i].natoms=0;
 	}
@@ -50,47 +54,354 @@ void fill_cell_list(mdsys_t *sys){
 void build_pairs(mdsys_t * sys){
 	int N=sys->N;
 	sys->npairs=13*N*N*N;
-	sys->plist=(cell_t *) malloc(sys->npairs*2*sizeof(cell_t));
-	for(int i=0;i<N*N*N;i++){
-		sys->plist[26*i]=sys->clist[i];	
-		sys->plist[26*i+1]=sys->clist[i+1];
+	sys->plist=(int *) malloc(sys->npairs*2*sizeof(int));
+	for(int i=0;i<N;++i){
+		for (int j=0;j<N;++j){
+			for (int k=0,k<N;++k){
 
-		sys->plist[26*i+2]=sys->clist[i];	
-		sys->plist[26*i+3]=sys->clist[i+N];
-	
-		sys->plist[26*i+4]=sys->clist[i];	
-		sys->plist[26*i+5]=sys->clist[i+N+1];
-	
-		sys->plist[26*i+6]=sys->clist[i];	
-		sys->plist[26*i+7]=sys->clist[i+N*N];
+			   if (i<N-1 && j<N-1 && k<N-1){
+				sys->plist[26*(i*N*N+j*N+k)]=i*N*N+j*N+k;	
+				sys->plist[26*(i*N*N+j*N+k)+1]=i*N*N+j*N+k+1;
 
-		sys->plist[26*i+8]=sys->clist[i];	
-		sys->plist[26*i+9]=sys->clist[i+N*N+1];
+				sys->plist[26*(i*N*N+j*N+k)+2]=i*N*N+j*N+k;	
+				sys->plist[26*(i*N*N+j*N+k)+3]=i*N*N+(j+1)*N+k;
+			
+				sys->plist[26*(i*N*N+j*N+k)+4]=i*N*N+j*N+k;	
+				sys->plist[26*(i*N*N+j*N+k)+5]=i*N*N+(j+1)*N+k+1;
+						//
+				sys->plist[26*(i*N*N+j*N+k)+6]=i*N*N+j*N+k;	
+				sys->plist[26*(i*N*N+j*N+k)+7]=(i+1)*N*N+j*N+k;
 
-		sys->plist[26*i+10]=sys->clist[i];	
-		sys->plist[26*i+11]=sys->clist[i+N*N+N];
+				sys->plist[26*(i*N*N+j*N+k)+8]=i*N*N+j*N+k;	
+				sys->plist[26*(i*N*N+j*N+k)+9]=(i+1)*N*N+j*N+k+1;
 
-		sys->plist[26*i+12]=sys->clist[i];
-		sys->plist[26*i+13]=sys->clist[i+N*N+N+1];
+				sys->plist[26*(i*N*N+j*N+k)+10]=i*N*N+j*N+k;	
+				sys->plist[26*(i*N*N+j*N+k)+11]=(i+1)*N*N+(j+1)*N+k;
 
-		sys->plist[26*i+14]=sys->clist[i+N*N];
-		sys->plist[26*i+15]=sys->clist[i+1];
+				sys->plist[26*(i*N*N+j*N+k)+12]=i*N*N+j*N+k;
+				sys->plist[26*(i*N*N+j*N+k)+13]=(i+1)*N*N+(j+1)*N+k+1;
+						//
+				sys->plist[26*(i*N*N+j*N+k)+14]=(i+1)*N*N+j*N+k;
+				sys->plist[26*(i*N*N+j*N+k)+15]=i*N*N+j*N+k+1;
 
-		sys->plist[26*i+16]=sys->clist[i+N*N];
-		sys->plist[26*i+17]=sys->clist[i+N];
+				sys->plist[26*(i*N*N+j*N+k)+16]=(i+1)*N*N+j*N+k;
+				sys->plist[26*(i*N*N+j*N+k)+17]=i*N*N+(j+1)*N+k;
 
-		sys->plist[26*i+18]=sys->clist[i+N*N];
-		sys->plist[26*i+19]=sys->clist[i+N+1];
+				sys->plist[26*(i*N*N+j*N+k)+18]=(i+1)*N*N+j*N+k;
+				sys->plist[26*(i*N*N+j*N+k)+19]=i*N*N+(j+1)*N+k+1;
 
-		sys->plist[26*i+20]=sys->clist[i+1];
-		sys->plist[26*i+21]=sys->clist[i+N];
+				sys->plist[26*(i*N*N+j*N+k)+20]=;
+				sys->plist[26*(i*N*N+j*N+k)+21]=i+N;
 
-		sys->plist[26*i+22]=sys->clist[i+1];
-		sys->plist[26*i+23]=sys->clist[i+N*N+N];
+				sys->plist[26*(i*N*N+j*N+k)+22]=i+1;
+				sys->plist[26*(i*N*N+j*N+k)+23]=i+N*N+N;
 
-		sys->plist[26*i+24]=sys->clist[i+N];
-		sys->plist[26*i+25]=sys->clist[i+N*N+1];
-	
+				sys->plist[26*(i*N*N+j*N+k)+24]=i+N;
+				sys->plist[26*(i*N*N+j*N+k)+25]=i+N*N+1;
+			   }
+
+			 if (i==N-1 && j==N-1 && k<N-1){
+			    
+			    sys->plist[26*(i*N*N+j*N+k)]=i*N*N+j*N+k;
+			    sys->plist[26*(i*N*N+j*N+k)+1]=i*N*N+j*N+1;
+			                                               
+			    sys->plist[26*(i*N*N+j*N+k)+2]=i*N*N+j*N+k;	
+			    sys->plist[26*(i*N*N+j*N+k)+3]=i*N*N+k;
+			                                               
+			    sys->plist[26*(i*N*N+j*N+k)+4]=i*N*N+j*N+k;	
+			    sys->plist[26*(i*N*N+j*N+k)+5]=i*N*N+k+1;
+			       // 4 zero with top                              
+			    sys->plist[26*(i*N*N+j*N+k)+6]=i*N*N+j*N+k;	
+			    sys->plist[26*(i*N*N+j*N+k)+7]=j*N+k;
+			                                               
+			    sys->plist[26*(i*N*N+j*N+k)+8]=i*N*N+j*N+k;	
+			    sys->plist[26*(i*N*N+j*N+k)+9]=j*N;
+			                                               
+			    sys->plist[26*(i*N*N+j*N+k)+10]=i*N*N+j*N+k;	
+			    sys->plist[26*(i*N*N+j*N+k)+11]=k;
+			                                               
+			    sys->plist[26*(i*N*N+j*N+k)+12]=i*N*N+j*N+k;
+			    sys->plist[26*(i*N*N+j*N+k)+13]=0;
+			        // top  with zero sides                                
+			    sys->plist[26*(i*N*N+j*N+k)+14]=j*N+k;
+			    sys->plist[26*(i*N*N+j*N+k)+15]=i*N*N+j*N;
+			                                               
+			    sys->plist[26*(i*N*N+j*N+k)+16]=j*N+k;
+			    sys->plist[26*(i*N*N+j*N+k)+17]=i*N*N+k;
+			                                               
+			    sys->plist[26*(i*N*N+j*N+k)+18]=j*N+k;
+			    sys->plist[26*(i*N*N+j*N+k)+19]=i*N*N;
+			         //  sides with top sides                               
+			    sys->plist[26*(i*N*N+j*N+k)+20]=i*N*N+j*N;
+			    sys->plist[26*(i*N*N+j*N+k)+21]=j*N;
+			                                               
+			    sys->plist[26*(i*N*N+j*N+k)+22]=i*N*N+k;
+			    sys->plist[26*(i*N*N+j*N+k)+23]=j*N+k;
+			          // sides betweem them              
+			    sys->plist[26*(i*N*N+j*N+k)+24]=i*N*N+j*N;
+			    sys->plist[26*(i*N*N+j*N+k)+25]=i*N*N+k;
+			 }
+
+			 if (i<N-1 && j==N-1 && k==N-1){
+                             sys->plist[26*(i*N*N+j*N+k)]=i*N*N+j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+1]=i*N*N+j*N;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+2]=i*N*N+j*N+k;	
+                             sys->plist[26*(i*N*N+j*N+k)+3]=i*N*N+k;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+4]=i*N*N+j*N+k;	
+                             sys->plist[26*(i*N*N+j*N+k)+5]=i*N*N;
+                                // 4 zero with top                              
+                             sys->plist[26*(i*N*N+j*N+k)+6]=i*N*N+j*N+k;	
+                             sys->plist[26*(i*N*N+j*N+k)+7]=(i+1)*N*N+j*N+k;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+8]=i*N*N+j*N+k;	
+                             sys->plist[26*(i*N*N+j*N+k)+9]=(i+1)*N*N+j*N;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+10]=i*N*N+j*N+k;	
+                             sys->plist[26*(i*N*N+j*N+k)+11]=(i+1)*N*N+k;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+12]=i*N*N+j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+13]=(i+1)*N*N;
+                                 // top  with zero sides                                
+                             sys->plist[26*(i*N*N+j*N+k)+14]=(i+1)*N*N+j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+15]=i*N*N+j*N;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+16]=(i+1)*N*N+j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+17]=i*N*N+k;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+18]=(i+1)*N*N+j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+19]=i*N*N;
+                                  //  sides with top sides                               
+                             sys->plist[26*(i*N*N+j*N+k)+20]=i*N*N+j*N;
+                             sys->plist[26*(i*N*N+j*N+k)+21]=(i+1)*N*N+j*N;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+22]=i*N*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+23]=(i+1)*N*N+k;
+                                   // sides betweem them              
+                             sys->plist[26*(i*N*N+j*N+k)+24]=i*N*N+j*N;
+                             sys->plist[26*(i*N*N+j*N+k)+25]=i*N*N+k;
+                         }
+
+
+			 if (i==N-1 && j<N-1 && k==N-1){
+				 
+                              sys->plist[26*(i*N*N+j*N+k)]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+1]=i*N*N+j*N;
+                                  // ....                                       
+                              sys->plist[26*(i*N*N+j*N+k)+2]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+3]=i*N*N+(j+1)*N+k;
+                                                                      
+                              sys->plist[26*(i*N*N+j*N+k)+4]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+5]=i*N*N+(j+1)*N;
+                                  // ....                               
+                              sys->plist[26*(i*N*N+j*N+k)+6]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+7]=j*N+k;
+                                                                         
+                             sys->plist[26*(i*N*N+j*N+k)+8]=i*N*N+j*N+k;	
+                             sys->plist[26*(i*N*N+j*N+k)+9]=j*N;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+10]=i*N*N+j*N+k;	
+                             sys->plist[26*(i*N*N+j*N+k)+11]=k;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+12]=i*N*N+j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+13]=0;
+                                 // top  with zero sides                                
+                             sys->plist[26*(i*N*N+j*N+k)+14]=j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+15]=i*N*N+j*N;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+16]=j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+17]=i*N*N+k;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+18]=j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+19]=i*N*N;
+                                  //  sides with top sides                               
+                             sys->plist[26*(i*N*N+j*N+k)+20]=i*N*N+j*N;
+                             sys->plist[26*(i*N*N+j*N+k)+21]=j*N;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+22]=i*N*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+23]=j*N+k;
+                                   // sides betweem them              
+                             sys->plist[26*(i*N*N+j*N+k)+24]=i*N*N+j*N;
+                             sys->plist[26*(i*N*N+j*N+k)+25]=i*N*N+k;
+                         }
+
+
+
+			 if (i==N-1 && j==N-1 && k==N-1){
+				 // 3 zero with sides
+                              sys->plist[26*(i*N*N+j*N+k)]=i*N*N+j*N+k;
+                              sys->plist[26*(i*N*N+j*N+k)+1]=i*N*N+j*N;
+                                                                         
+                              sys->plist[26*(i*N*N+j*N+k)+2]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+3]=i*N*N+k;
+                                                                         
+                              sys->plist[26*(i*N*N+j*N+k)+4]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+5]=i*N*N;
+                                 // 4 zero with top                              
+                              sys->plist[26*(i*N*N+j*N+k)+6]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+7]=j*N+k;
+                                                                         
+                              sys->plist[26*(i*N*N+j*N+k)+8]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+9]=j*N;
+                                                                         
+                              sys->plist[26*(i*N*N+j*N+k)+10]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+11]=k;
+                                                                         
+                              sys->plist[26*(i*N*N+j*N+k)+12]=i*N*N+j*N+k;
+                              sys->plist[26*(i*N*N+j*N+k)+13]=0;
+                                  // top  with zero sides                                
+                              sys->plist[26*(i*N*N+j*N+k)+14]=j*N+k;
+                              sys->plist[26*(i*N*N+j*N+k)+15]=i*N*N+j*N;
+                                                                         
+                              sys->plist[26*(i*N*N+j*N+k)+16]=j*N+k;
+                              sys->plist[26*(i*N*N+j*N+k)+17]=i*N*N+k;
+                                                                         
+                              sys->plist[26*(i*N*N+j*N+k)+18]=j*N+k;
+                              sys->plist[26*(i*N*N+j*N+k)+19]=i*N*N;
+                                   //  sides with top sides                               
+			      sys->plist[26*(i*N*N+j*N+k)+20]=i*N*N+j*N;
+                              sys->plist[26*(i*N*N+j*N+k)+21]=j*N;
+                                                                         
+                              sys->plist[26*(i*N*N+j*N+k)+22]=i*N*N+k;
+                              sys->plist[26*(i*N*N+j*N+k)+23]=j*N+k;
+                                    // sides betweem them              
+                              sys->plist[26*(i*N*N+j*N+k)+24]=i*N*N+j*N;
+                              sys->plist[26*(i*N*N+j*N+k)+25]=i*N*N+k;
+                         }
+
+
+			if (i<N-1 && j<N-1 && k==N-1){
+                            sys->plist[26*(i*N*N+j*N+k)]=i*N*N+j*N+k;
+                            sys->plist[26*(i*N*N+j*N+k)+1]=i*N*N+j*N;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+2]=i*N*N+j*N+k;	
+                            sys->plist[26*(i*N*N+j*N+k)+3]=i*N*N+(j+1)+k;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+4]=i*N*N+j*N+k;	
+                            sys->plist[26*(i*N*N+j*N+k)+5]=i*N*N+(j+1);
+                               // 4 zero with top                              
+                            sys->plist[26*(i*N*N+j*N+k)+6]=i*N*N+j*N+k;	
+                            sys->plist[26*(i*N*N+j*N+k)+7]=(i+1)*N*N+j*N+k;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+8]=i*N*N+j*N+k;	
+                            sys->plist[26*(i*N*N+j*N+k)+9]=(i+1)*N*N+j*N+k+1;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+10]=i*N*N+j*N+k;	
+                            sys->plist[26*(i*N*N+j*N+k)+11]=(i+1)*N*N+(j+1)*N+k;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+12]=i*N*N+j*N+k;
+                            sys->plist[26*(i*N*N+j*N+k)+13]=(i+1)*N*N+(j+1)*N+k+1;
+                                // top  with zero sides                                
+                            sys->plist[26*(i*N*N+j*N+k)+14]=(i+1)*N*N+j*N+k;
+                            sys->plist[26*(i*N*N+j*N+k)+15]=i*N*N+j*N;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+16]=(i+1)*N*N+j*N+k;
+                            sys->plist[26*(i*N*N+j*N+k)+17]=i*N*N+k;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+18]=(i+1)*N*N+j*N+k;
+                            sys->plist[26*(i*N*N+j*N+k)+19]=i*N*N;
+                                 //  sides with top sides                               
+                            sys->plist[26*(i*N*N+j*N+k)+20]=i*N*N+j*N;
+                            sys->plist[26*(i*N*N+j*N+k)+21]=(i+1)*N*N+j*N+k+1;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+22]=i*N*N+k;
+                            sys->plist[26*(i*N*N+j*N+k)+23]=(i+1)*N*N+(j+1)*N+k;
+                                  // sides betweem them              
+                            sys->plist[26*(i*N*N+j*N+k)+24]=i*N*N+j*N;
+                            sys->plist[26*(i*N*N+j*N+k)+25]=i*N*N+k;
+                        }
+
+
+			if (i<N-1 && j==N-1 && k<N-1){
+                            sys->plist[26*(i*N*N+j*N+k)]=i*N*N+j*N+k;
+                            sys->plist[26*(i*N*N+j*N+k)+1]=i*N*N+j*N;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+2]=i*N*N+j*N+k;	
+                            sys->plist[26*(i*N*N+j*N+k)+3]=i*N*N+k;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+4]=i*N*N+j*N+k;	
+                            sys->plist[26*(i*N*N+j*N+k)+5]=i*N*N;
+                               // 4 zero with top                              
+                            sys->plist[26*(i*N*N+j*N+k)+6]=i*N*N+j*N+k;	
+                            sys->plist[26*(i*N*N+j*N+k)+7]=(i+1)*N*N+j*N+k;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+8]=i*N*N+j*N+k;	
+                            sys->plist[26*(i*N*N+j*N+k)+9]=(i+1)*N*N+j*N+k+1;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+10]=i*N*N+j*N+k;	
+                            sys->plist[26*(i*N*N+j*N+k)+11]=(i+1)*N*N+(j+1)*N+k;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+12]=i*N*N+j*N+k;
+                            sys->plist[26*(i*N*N+j*N+k)+13]=(i+1)*N*N+(j+1)*N+k+1;
+                                // top  with zero sides                                
+                            sys->plist[26*(i*N*N+j*N+k)+14]=(i+1)*N*N+j*N+k;
+                            sys->plist[26*(i*N*N+j*N+k)+15]=i*N*N+j*N;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+16]=(i+1)*N*N+j*N+k;
+                            sys->plist[26*(i*N*N+j*N+k)+17]=i*N*N+k;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+18]=(i+1)*N*N+j*N+k;
+                            sys->plist[26*(i*N*N+j*N+k)+19]=i*N*N;
+                                 //  sides with top sides                               
+                            sys->plist[26*(i*N*N+j*N+k)+20]=i*N*N+j*N;
+                            sys->plist[26*(i*N*N+j*N+k)+21]=(i+1)*N*N+j*N+k+1;
+                                                                       
+                            sys->plist[26*(i*N*N+j*N+k)+22]=i*N*N+k;
+                            sys->plist[26*(i*N*N+j*N+k)+23]=(i+1)*N*N+(j+1)*N+k;
+                                  // sides betweem them              
+                            sys->plist[26*(i*N*N+j*N+k)+24]=i*N*N+j*N;
+                            sys->plist[26*(i*N*N+j*N+k)+25]=i*N*N+k;
+                        }
+
+
+			 if (i==N-1 && j<N-1 && k<N-1){
+                        	 
+                              sys->plist[26*(i*N*N+j*N+k)]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+1]=i*N*N+j*N;
+                                                                         
+                              sys->plist[26*(i*N*N+j*N+k)+2]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+3]=i*N*N+(j+1)*N+k;
+                                  // ....                                      
+                              sys->plist[26*(i*N*N+j*N+k)+4]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+5]=i*N*N+(j+1)*N+k+1;
+                                  // ....                               
+                              sys->plist[26*(i*N*N+j*N+k)+6]=i*N*N+j*N+k;	
+                              sys->plist[26*(i*N*N+j*N+k)+7]=j*N+k;
+                                                                         
+                             sys->plist[26*(i*N*N+j*N+k)+8]=i*N*N+j*N+k;	
+                             sys->plist[26*(i*N*N+j*N+k)+9]=j*N;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+10]=i*N*N+j*N+k;	
+                             sys->plist[26*(i*N*N+j*N+k)+11]=k;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+12]=i*N*N+j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+13]=0;
+                                 // top  with zero sides                                
+                             sys->plist[26*(i*N*N+j*N+k)+14]=j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+15]=i*N*N+j*N;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+16]=j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+17]=i*N*N+k;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+18]=j*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+19]=i*N*N;
+                                  //  sides with top sides                               
+                             sys->plist[26*(i*N*N+j*N+k)+20]=i*N*N+j*N;
+                             sys->plist[26*(i*N*N+j*N+k)+21]=j*N;
+                                                                        
+                             sys->plist[26*(i*N*N+j*N+k)+22]=i*N*N+k;
+                             sys->plist[26*(i*N*N+j*N+k)+23]=j*N+k;
+                                   // sides betweem them              
+                             sys->plist[26*(i*N*N+j*N+k)+24]=i*N*N+j*N;
+                             sys->plist[26*(i*N*N+j*N+k)+25]=i*N*N+k;
+                         }
+
+
+
+
+			}
+		}	
 	}
 }
 

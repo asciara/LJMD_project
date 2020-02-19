@@ -32,7 +32,7 @@ struct _mdsys {
     /*Cell List params*/
     int npairs;
     cell_t * clist;
-    cell_t * plist;
+    int * plist;
     int N; // cells per dimension
     /*MPI data*/
     double *cx, *cy, *cz;
