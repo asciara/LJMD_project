@@ -57,7 +57,6 @@ void force(mdsys_t *sys)
     {
        double r[3];
        double *c;
-       double *cx,*cy,*cz;
        double rsq,ffac;
        double epot_priv=0.0;
        int i;
@@ -70,16 +69,15 @@ void force(mdsys_t *sys)
        c = C + (3 * tid * sys->natoms);
        azzero(c, 3 * sys->natoms);  
        
-       // NEED TO UNDERSTAND WHY THIS IS NEEDED CHECK TOMORROW
        /*assign address of thread-private-pointers and zero forces */
        
-       cx=sys->cx + (tid*sys->natoms); azzero(cx,sys->natoms); 
-       cy=sys->cy + (tid*sys->natoms); azzero(cy,sys->natoms); 
-       cz=sys->cz + (tid*sys->natoms); azzero(cz,sys->natoms); 
-       
+       azzero(sys->cx + (tid*sys->natoms), sys->natoms);
+       azzero(sys->cy + (tid*sys->natoms), sys->natoms);
+       azzero(sys->cz + (tid*sys->natoms), sys->natoms);
        
        for(i=sys->mpirank; i < sys->natoms -1 ; i+=sys->nprocs) {
-       if(((i-sys->mpirank)/sys->nprocs)%sys->nthreads!=tid) continue; 
+       if(((i-sys->mpirank)/sys->nprocs)%sys->nthreads!=tid) continue;
+        
        // divide work among threads
         
           for(int j= i+1 ; j < (sys->natoms); ++j) {
@@ -120,15 +118,21 @@ void force(mdsys_t *sys)
 #if defined (_OPENMP)
 #pragma omp barrier
 #endif
+       
+       
+       // define ranges for the various threads
        i = 1 + (sys->natoms / sys->nthreads);
        int fromidx = tid * i;
        int toidx = fromidx + i;
        if (toidx > sys->natoms) toidx = sys->natoms;
        
-       
+       // update force with array spread contributions
        for (i=0; i < sys->nthreads; ++i) {
+         
          int offs = 3 * i * sys->natoms;
+         
          for (int j=fromidx; j < toidx; ++j) {
+           
            int jj = 3 * j;
                       
            sys->cx[j] += C[ offs + jj ];

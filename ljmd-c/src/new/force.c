@@ -41,7 +41,6 @@ void force(mdsys_t *sys)
     }
     
     double * F;  
-    
     F=(double *)malloc(3*sys->nthreads*sys->natoms*sizeof(double));
     
     azzero(sys->fx,sys->natoms);
@@ -97,17 +96,22 @@ void force(mdsys_t *sys)
 #if defined (_OPENMP)
 #pragma omp barrier
 #endif
+       
+       // define ranges for the various threads
        i = 1 + (sys->natoms / sys->nthreads);
        int fromidx = tid * i;
        int toidx = fromidx + i;
        if (toidx > sys->natoms) toidx = sys->natoms;
        
-       // NOTE: THIS IS A DIFFERENT i!!!!!!!!!!!!!!!
+       // update force with array spread contributions
        for (i=0; i < sys->nthreads; ++i) {
+         
          int offs =  3 * i* sys->natoms;
          
          for (int j=fromidx; j < toidx; ++j) {  
+           
            int jj = 3 * j;
+           
            sys->fx[j] +=  F[ offs + jj];
            sys->fy[j] +=  F[ offs + jj + 1];
            sys->fz[j] +=  F[ offs + jj + 2];
