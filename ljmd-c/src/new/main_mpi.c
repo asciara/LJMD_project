@@ -74,18 +74,6 @@ int main(int argc, char **argv)
 	MPI_Bcast(&sys.mass,1,MPI_DOUBLE,0,sys.mpicomm);
     
 
-	/*sys.natoms=108;
-	sys.mass=39.948;
-	sys.epsilon=0.2379;
-	sys.sigma=3.405;
-	sys.rcut=8.5;
-	sys.box=17.1580;
-	sys.dt=5.0;
-	sys.nsteps=1000;	
-
-	sprintf(restfile,"argon_108.rest");
-	
-	sys.nsize=sys.natoms/sys.nprocs;*/
  
     /* allocate memory */
     sys.rx=(double *)malloc(sys.natoms*sizeof(double));
@@ -111,10 +99,16 @@ int main(int argc, char **argv)
     	fp=fopen(restfile,"r");
     	if(fp) {
         	for (i=0; i<sys.natoms; ++i) {
-            		fscanf(fp,"%lf%lf%lf",sys.rx+i, sys.ry+i, sys.rz+i);
+            		if(fscanf(fp,"%lf%lf%lf",sys.rx+i, sys.ry+i, sys.rz+i)==3)
+				continue;
+			else
+				return 3;
         	}
         	for (i=0; i<sys.natoms; ++i) {
-            		fscanf(fp,"%lf%lf%lf",sys.vx+i, sys.vy+i, sys.vz+i);
+            		if(fscanf(fp,"%lf%lf%lf",sys.vx+i, sys.vy+i, sys.vz+i)==3)
+				continue;
+			else
+				return 3;
         	}
         	fclose(fp);
         	azzero(sys.fx, sys.natoms);
@@ -130,12 +124,6 @@ int main(int argc, char **argv)
     sys.nfi=0;
     force(&sys);
 
-/*if (sys.mpirank==0){
-	for (int i=0;i<sys.natoms;i++){
-		printf("Force on atom %d: (%f,%f,%f)\n",i,sys.fx[i],sys.fy[i],sys.fz[i]);
-	}
-	printf("\n");
-} */  
    if (sys.mpirank==0){ 
     	erg=fopen(ergfile,"w");
     	traj=fopen(trajfile,"w");
