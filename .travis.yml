@@ -17,13 +17,4 @@ matrix:
         - pip install mpi4py
       script:
         - cd ljmd-c
-        - make sequential=on
-        - cd src_py
-        - python3 main.py < ../examples/argon_108.inp
-        - cd ..
-        - make clean
-        #- cd ljmd-c
-        #- make mpi sequential=on
-        #- cd src_py
-        #- mpiexec -np 1 python3 main_mpi.py < ../examples/argon_108.inp
-
+        - make check_python
