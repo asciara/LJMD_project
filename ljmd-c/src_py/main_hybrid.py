@@ -20,6 +20,7 @@ import velverlet
 from energy import *
 import time
 from mpi4py import MPI
+import os
 
 def create_system(S, input_contents):
    for count,line in enumerate(input_contents):
@@ -55,6 +56,13 @@ system.mpicomm = comm_val
 system.mpirank  = comm.Get_rank()
 system.nprocs = comm.Get_size()
 
+try:
+    system.nthreads = int(os.environ['OMP_NUM_THREADS'])
+except KeyError:
+    if system.mpirank == 0:
+        print("ERROR: Please set the environment variable OMP_NUM_THREADS")
+    sys.exit(1)
+
 if (system.mpirank == 0):
 
     restfile,trajfile,ergfile,nprint=create_system(system, sys.stdin)
@@ -71,8 +79,6 @@ system.natoms = comm.bcast(system.natoms, root = 0)
 system.sigma = comm.bcast(system.sigma, root = 0)
 system.epsilon = comm.bcast(system.epsilon, root = 0)
 system.mass = comm.bcast(system.mass, root = 0)
-
-system.nthreads = 1
 
 # allocate memory
 
@@ -105,9 +111,11 @@ system.vx = (c_double * system.natoms)()
 system.vy = (c_double * system.natoms)()
 system.vz = (c_double * system.natoms)()
 
-system.cx = (c_double * system.natoms)()
-system.cy = (c_double * system.natoms)()
-system.cz = (c_double * system.natoms)()
+length = system.natoms * system.nthreads
+
+system.cx = (c_double * length)()
+system.cy = (c_double * length)()
+system.cz = (c_double * length)()
 
 if system.mpirank == 0:
     system.fx = (c_double * system.natoms)()
@@ -172,9 +180,8 @@ if system.mpirank == 0:
 t = 0.0
 final_t=0.0
 
-
 for system.nfi in range(1, system.nsteps + 1):
-
+    
     # write output, if requested 
     if (system.mpirank == 0 and (system.nfi % nprint) == 0):
         output(system, erg, traj);
@@ -195,7 +202,6 @@ for system.nfi in range(1, system.nsteps + 1):
         ekin(system)
     
     t += time.time() - t_tmp
-
 
 final_t = comm.reduce(t, op=MPI.MAX, root = 0)
 

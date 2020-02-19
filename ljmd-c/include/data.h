@@ -19,6 +19,8 @@ struct _mdsys {
     double *rx, *ry, *rz;
     double *vx, *vy, *vz;
     double *fx, *fy, *fz;
+    /*OPENMP data*/
+    int nthreads;
     /*MPI data*/
     double *cx, *cy, *cz;
 #ifdef _MPI
@@ -26,8 +28,7 @@ struct _mdsys {
 #endif
     int nprocs;
     int mpirank;
-    int nsize;
-    int nthreads;
+    //int nsize;
 
 };
 typedef struct _mdsys mdsys_t;

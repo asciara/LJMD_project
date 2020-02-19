@@ -26,7 +26,7 @@ CFLAGS=-Wall -O3 -ffast-math -march=native -mavx2  $(FOPENMP) $(FPERF)
 endif
 
 LDLIBS=-lm
-LIBCOMPIL_FLAGS  = -shared
+LIBCOMPIL_FLAGS  = -shared $(FOPENMP)
 
 # list of source files
 SRC=main.c \
@@ -46,7 +46,8 @@ EXE=main.x
 default: ../$(EXE)
 
 clean:
-	rm -f *.mod *.o *.so ../main.x
+	rm -f *.mod *.o *.so ../main.x ../src_py/argon_108.* ../src_py/argon_2916.*
+	rm -rf ../src_py/__pycache__
 
 # linker rule
 ../$(EXE): $(OBJ)
