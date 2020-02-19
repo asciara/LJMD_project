@@ -1,14 +1,14 @@
 #-*- Makefile -*-
 SHELL=/bin/sh
-CC=gcc
-CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer
+CC=mpicc
+CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer -fopenmp
 LDLIBS=-lm
-
+OFLAGS=-D_MPI
 # list of source files
-SRC=testforce.c utilities.c force.c
+SRC=testforce_mpi.c utilities.c force_mpi.c
 
 IPATH=../../include/
-VPATH=../../src
+VPATH=../../src/mpi ../../src/new
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x
@@ -24,7 +24,7 @@ $(EXE): $(OBJ)
 
 # compilation pattern rule for objects
 %.o: %.c 
-	$(CC) -c $(CFLAGS) $< -I $(IPATH)
+	$(CC) -c $(CFLAGS) $(OFLAGS) $< -I $(IPATH)
 
 # dependencies
 %.o: $(IPATH)%.h

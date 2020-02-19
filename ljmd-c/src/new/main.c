@@ -10,18 +10,40 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
+#include <sys/time.h>
+#include <time.h>
+
+#if defined (_OPENMP)
+#include <omp.h>
+#endif
 
 #include "data.h"
 #include "prototypes.h"
+
+double seconds(){
+
+    struct timeval tmp;
+    double sec;
+    gettimeofday( &tmp, (struct timezone *)0 );
+    sec = tmp.tv_sec + ((double)tmp.tv_usec)/1000000.0;
+    return sec;
+}
 
 /* main */
 int main(int argc, char **argv) 
 {
     int nprint, i;
+    double t, t_tmp;
     char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
     FILE *fp,*traj,*erg;
     mdsys_t sys;
 
+#if defined (_OPENMP)
+#pragma omp parallel 
+    sys.nthreads = omp_get_num_threads();
+#else
+    sys.nthreads = 1;
+#endif
     /* read input file */
     if(get_a_line(stdin,line)) return 1;
     sys.natoms=atoi(line);
@@ -45,6 +67,7 @@ int main(int argc, char **argv)
     if(get_a_line(stdin,line)) return 1;
     nprint=atoi(line);
 
+    
     /* allocate memory */
     sys.rx=(double *)malloc(sys.natoms*sizeof(double));
     sys.ry=(double *)malloc(sys.natoms*sizeof(double));
@@ -52,9 +75,11 @@ int main(int argc, char **argv)
     sys.vx=(double *)malloc(sys.natoms*sizeof(double));
     sys.vy=(double *)malloc(sys.natoms*sizeof(double));
     sys.vz=(double *)malloc(sys.natoms*sizeof(double));
-    sys.fx=(double *)malloc(sys.natoms*sizeof(double));
-    sys.fy=(double *)malloc(sys.natoms*sizeof(double));
-    sys.fz=(double *)malloc(sys.natoms*sizeof(double));
+   
+    sys.fx=(double *)malloc(sys.nthreads*sys.natoms*sizeof(double));
+    sys.fy=(double *)malloc(sys.nthreads*sys.natoms*sizeof(double));
+    sys.fz=(double *)malloc(sys.nthreads*sys.natoms*sizeof(double));
+
 
     /* read restart */
     fp=fopen(restfile,"r");
@@ -78,7 +103,7 @@ int main(int argc, char **argv)
     sys.nfi=0;
     force(&sys);
     ekin(&sys);
-    
+
     erg=fopen(ergfile,"w");
     traj=fopen(trajfile,"w");
 
@@ -88,19 +113,27 @@ int main(int argc, char **argv)
 
     /**************************************************/
     /* main MD loop */
+    
+    t = 0.0;
+    
     for(sys.nfi=1; sys.nfi <= sys.nsteps; ++sys.nfi) {
-
+        
         /* write output, if requested */
         if ((sys.nfi % nprint) == 0)
             output(&sys, erg, traj);
-
+        
+        t_tmp = seconds();
+        
         /* propagate system and recompute energies */
         velverlet(&sys);
         ekin(&sys);
+        
+        t += seconds() - t_tmp;
     }
     /**************************************************/
 
     /* clean up: close files, free memory */
+    printf("Evolve time: %.6f\n", t);
     printf("Simulation Done.\n");
     fclose(erg);
     fclose(traj);

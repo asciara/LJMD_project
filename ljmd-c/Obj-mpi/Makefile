@@ -1,5 +1,4 @@
 #-*- Makefile -*-
-
 #turn on debug to activate
 debug := 
 sequential := 
@@ -12,55 +11,53 @@ endif
 
 ifdef perf
 FPERF=-fomit-frame-pointer
-FPERF +=-g
 else
 FPERF=
 endif
 
 SHELL=/bin/sh
-CC=gcc
+CC=mpicc
 ifdef debug
 CFLAGS=-O0 -pg -g  $(FOPENMP) $(FPERF)
 else
-CFLAGS=-Wall -O3 -ffast-math -mavx2  $(FOPENMP) $(FPERF)
+CFLAGS=-Wall -O3 -ffast-math -mavx2 $(FOPENMP) $(FPERF)
 endif
-
 LDLIBS=-lm
-LIBCOMPIL_FLAGS  = -shared $(FOPENMP)
-
+LIBCOMPIL_FLAGS  = -shared $(FOPENMP) 
+OFLAGS=-D_MPI
 # list of source files
-SRC=main.c \
-    data.c \
+SRC=main_mpi.c \
     energy.c \
     utilities.c \
     output.c \
-    force.c \
+    data.c \
+    force_mpi.c \
     velverlet.c \
 
 IPATH=../include/ 
 VPATH=../src/new 
 
 OBJ=$(SRC:%.c=%.o)
-EXE=main.x
+EXE=main_mpi.x
 
 default: ../$(EXE)
 
 clean:
-	rm -f *.mod *.o *.so ../main.x ../src_py/argon_108.* ../src_py/argon_2916.*
+	rm -f *.mod *.o *.so ../main_mpi.x ../src_py/argon_108.* ../src_py/argon_2916.*
 	rm -rf ../src_py/__pycache__
 
 # linker rule
 ../$(EXE): $(OBJ)
-	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS) 
+	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
 
 # compilation pattern rule for objects
 %.o: %.c 
-	$(CC) -c $(CFLAGS) $< -I $(IPATH) 
+	$(CC) -c $(CFLAGS) $(OFLAGS) $< -I $(IPATH) 
 
-force.o: force.c  data.c utilities.c
-	$(CC) -fPIC -c $(CFLAGS) $< -o force_fpic.o -I $(IPATH)
-	$(CC) $(LIBCOMPIL_FLAGS) data_fpic.o utilities_fpic.o force_fpic.o -o libforce.so 
-	$(CC) -c $(CFLAGS) $< -I $(IPATH)
+force_mpi.o: force_mpi.c  data.c utilities.c
+	$(CC) -fPIC -c $(CFLAGS) $(OFLAGS) $< -o force_mpi_fpic.o -I $(IPATH)
+	$(CC) $(LIBCOMPIL_FLAGS) data_fpic.o utilities_fpic.o force_mpi_fpic.o -o libforce_mpi.so 
+	$(CC) -c $(CFLAGS) $(OFLAGS) $< -I $(IPATH)
 
 utilities.o: utilities.c
 	$(CC) -fPIC -c $(CFLAGS) $< -o utilities_fpic.o -I $(IPATH)
@@ -76,10 +73,10 @@ data.o: data.c
 #	$(CC) -fPIC -c $(CFLAGS) $< -I $(IPATH)
 #	$(CC) $(LIBCOMPIL_FLAGS) data.o energy.o -o libenergy.so 
 
-velverlet.o: velverlet.c data.c utilities.c force.c
-	$(CC) -fPIC -c $(CFLAGS) $< -o velverlet_fpic.o -I $(IPATH)
-	$(CC) $(LIBCOMPIL_FLAGS) velverlet_fpic.o data_fpic.o utilities_fpic.o force_fpic.o -o libvelverlet.so
-	$(CC) -c $(CFLAGS) $< -I $(IPATH)
-
+velverlet.o: velverlet.c data.c utilities.c force_mpi.c
+	$(CC) -fPIC -c $(CFLAGS) $(OFLAGS) $< -o velverlet_fpic.o -I $(IPATH)
+	$(CC) $(LIBCOMPIL_FLAGS) velverlet_fpic.o data_fpic.o utilities_fpic.o force_mpi_fpic.o -o libvelverlet.so
+	$(CC) -c $(CFLAGS) $(OFLAGS) $< -I $(IPATH)
+	
 # dependencies
 %.o: $(IPATH)%.h

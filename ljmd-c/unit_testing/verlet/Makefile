@@ -8,7 +8,7 @@ LDLIBS=-lm
 SRC=test_timestep.c velverlet.c  force.c data.c  utilities.c
 
 IPATH=../../include/
-VPATH=../../src
+VPATH=../../src/new
 
 OBJ=$(SRC:%.c=%.o)
 EXE=main.x

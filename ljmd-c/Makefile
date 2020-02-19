@@ -19,15 +19,26 @@ test:
 serial:
 	$(MAKE) $(MFLAGS) -C Obj-$@
 
+mpi:
+	$(MAKE) $(MFLAGS) -C Obj-$@
+
 clean:
 	$(MAKE) $(MFLAGS) -C Obj-serial clean
 	$(MAKE) $(MFLAGS) -C examples clean
 	$(MAKE) $(MFLAGS) -C Obj-new clean
+	$(MAKE) $(MFLAGS) -C Obj-mpi clean
 	$(MAKE) $(MFLAGS) -C unit_testing/force clean
 	$(MAKE) $(MFLAGS) -C unit_testing/verlet clean
 	$(MAKE) $(MFLAGS) -C unit_testing/energy clean
 	$(MAKE) $(MFLAGS) -C unit_testing/utilities clean
 
-
-check: new
+check: new mpi
 	$(MAKE) $(MFLAGS) -C examples check
+	$(MAKE) $(MFLAGS) -C examples checkmpi
+	
+check_python: new mpi
+	$(MAKE) $(MFLAGS) -C examples check_python
+	$(MAKE) $(MFLAGS) -C examples checkmpi_python
+
+test_python: new
+	$(MAKE) $(MFLAGS) -C src_py check
