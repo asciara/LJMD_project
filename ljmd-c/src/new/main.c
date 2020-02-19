@@ -10,6 +10,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
+#include <sys/time.h>
+#include <time.h>
 
 #if defined (_OPENMP)
 #include <omp.h>
@@ -18,10 +20,20 @@
 #include "data.h"
 #include "prototypes.h"
 
+double seconds(){
+
+    struct timeval tmp;
+    double sec;
+    gettimeofday( &tmp, (struct timezone *)0 );
+    sec = tmp.tv_sec + ((double)tmp.tv_usec)/1000000.0;
+    return sec;
+}
+
 /* main */
 int main(int argc, char **argv) 
 {
     int nprint, i;
+    double t, t_tmp;
     char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
     FILE *fp,*traj,*erg;
     mdsys_t sys;
@@ -101,19 +113,27 @@ int main(int argc, char **argv)
 
     /**************************************************/
     /* main MD loop */
+    
+    t = 0.0;
+    
     for(sys.nfi=1; sys.nfi <= sys.nsteps; ++sys.nfi) {
-
+        
         /* write output, if requested */
         if ((sys.nfi % nprint) == 0)
             output(&sys, erg, traj);
-
+        
+        t_tmp = seconds();
+        
         /* propagate system and recompute energies */
         velverlet(&sys);
         ekin(&sys);
+        
+        t += seconds() - t_tmp;
     }
     /**************************************************/
 
     /* clean up: close files, free memory */
+    printf("Evolve time: %.6f\n", t);
     printf("Simulation Done.\n");
     fclose(erg);
     fclose(traj);

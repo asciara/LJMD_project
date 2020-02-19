@@ -17,7 +17,8 @@ void force(mdsys_t *sys)
 {
     double rcsq;
     double c12,c6;
-
+    double half_box;
+    
     /* zero energy and forces */
     double epot=0.0;
 
@@ -25,7 +26,7 @@ void force(mdsys_t *sys)
     c12 = 4.0 * sys->epsilon*pow(sys->sigma, 12.0);
     c6 = 4.0 * sys->epsilon*pow(sys->sigma, 6.0);
     rcsq = sys->rcut * sys->rcut;
-
+    half_box = 0.5*sys->box;
 #if defined (_OPENMP)
 #pragma omp parallel reduction(+:epot)
 #endif
@@ -34,6 +35,7 @@ void force(mdsys_t *sys)
        double *fx,*fy,*fz;
        double rsq,ffac;
        double epot_priv=0.0;
+  
        int i;
 #if defined (_OPENMP)
        int tid=omp_get_thread_num();
@@ -48,9 +50,9 @@ void force(mdsys_t *sys)
            for(int j= i+1 ; j < (sys->natoms); ++j) {
                
                /* get distance between particle i and j */
-               rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
-               ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
-               rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
+               rx=pbc(sys->rx[i] - sys->rx[j], half_box);
+               ry=pbc(sys->ry[i] - sys->ry[j], half_box);
+               rz=pbc(sys->rz[i] - sys->rz[j], half_box);
                rsq = rx*rx + ry*ry + rz*rz;
          
                /* compute force and energy if within cutoff */
