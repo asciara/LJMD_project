@@ -127,4 +127,6 @@ void force(mdsys_t *sys)
     } // end of parallel region
     
     sys->epot = epot;
+    
+    free(R);
 }
