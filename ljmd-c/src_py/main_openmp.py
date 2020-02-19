@@ -4,6 +4,7 @@ from utilities import *
 from output import *
 from energy import *
 import time
+import os
 
 def create_system(input_contents):
    S=data.mdsys_t()
@@ -38,9 +39,15 @@ system,restfile,trajfile,ergfile,nprint=create_system(sys.stdin)
 #system,restfile,trajfile,ergfile,nprint=create_system(f) 
 #f.close()
 
-system.nthreads = 1
+try:
+    system.nthreads = int(os.environ['OMP_NUM_THREADS'])
+except KeyError:
+    print("ERROR: Please set the environment variable OMP_NUM_THREADS")
+    sys.exit(1)
 
 # allocate memory
+
+length = system.natoms * system.nthreads
 
 system.rx = (c_double * system.natoms)()
 system.ry = (c_double * system.natoms)()
@@ -48,9 +55,9 @@ system.rz = (c_double * system.natoms)()
 system.vx = (c_double * system.natoms)()
 system.vy = (c_double * system.natoms)()
 system.vz = (c_double * system.natoms)()
-system.fx = (c_double * system.natoms)()
-system.fy = (c_double * system.natoms)()
-system.fz = (c_double * system.natoms)()
+system.fx = (c_double * length)()
+system.fy = (c_double * length)()
+system.fz = (c_double * length)()
 
 # read restart
 

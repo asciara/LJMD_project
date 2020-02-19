@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
     MPI_Comm_rank(sys.mpicomm,&sys.mpirank);
     MPI_Comm_size(sys.mpicomm,&sys.nprocs);
 
-    sys.nsize=sys.natoms/sys.nprocs;
+    //sys.nsize=sys.natoms/sys.nprocs;
 
     /* read input file */
     sys.natoms=108;
