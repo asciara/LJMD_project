@@ -35,6 +35,8 @@ def create_system(input_contents):
 
 system,restfile,trajfile,ergfile,nprint=create_system(sys.stdin)
 
+system.nthreads = 1
+
 #f = open("../examples/argon_108.inp", "r")
 #system,restfile,trajfile,ergfile,nprint=create_system(f) 
 #f.close()
