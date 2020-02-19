@@ -72,6 +72,8 @@ system.sigma = comm.bcast(system.sigma, root = 0)
 system.epsilon = comm.bcast(system.epsilon, root = 0)
 system.mass = comm.bcast(system.mass, root = 0)
 
+system.nthreads = 1
+
 # allocate memory
 
 '''
@@ -154,7 +156,7 @@ if system.mpirank == 0:
     #eso.ekin(system)
     ekin(system)
 
-    erg = open(restfile, "w")
+    erg = open(ergfile, "w")
     traj = open(trajfile, "w")
 
     print("Starting simulation with %d atoms for %d steps." % (system.natoms, system.nsteps));

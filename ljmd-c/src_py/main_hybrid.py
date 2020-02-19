@@ -164,7 +164,7 @@ if system.mpirank == 0:
     #eso.ekin(system)
     ekin(system)
 
-    erg = open(restfile, "w")
+    erg = open(ergfile, "w")
     traj = open(trajfile, "w")
 
     print("Starting simulation with %d atoms for %d steps." % (system.natoms, system.nsteps));
