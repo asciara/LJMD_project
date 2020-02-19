@@ -18,3 +18,4 @@ matrix:
       script:
         - cd ljmd-c
         - make check_python
+        - make test_python
