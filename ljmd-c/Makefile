@@ -22,7 +22,6 @@ serial:
 mpi:
 	$(MAKE) $(MFLAGS) -C Obj-$@
 
-
 clean:
 	$(MAKE) $(MFLAGS) -C Obj-serial clean
 	$(MAKE) $(MFLAGS) -C examples clean
@@ -33,14 +32,13 @@ clean:
 	$(MAKE) $(MFLAGS) -C unit_testing/energy clean
 	$(MAKE) $(MFLAGS) -C unit_testing/utilities clean
 
-
-
 check: new mpi
-
 	$(MAKE) $(MFLAGS) -C examples check
 	$(MAKE) $(MFLAGS) -C examples checkmpi
 	
 check_python: new mpi
-
 	$(MAKE) $(MFLAGS) -C examples check_python
 	$(MAKE) $(MFLAGS) -C examples checkmpi_python
+
+test_python: new
+	$(MAKE) $(MFLAGS) -C src_py check

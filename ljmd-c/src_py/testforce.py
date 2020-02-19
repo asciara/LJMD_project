@@ -13,6 +13,7 @@ system.epsilon = 0.2379;
 system.sigma = 3.405;
 system.rcut = 8.5;
 system.box = 17.1580;
+system.nthreads=1
 
 print("\nBEGIN FORCE TESTS\n")
 
