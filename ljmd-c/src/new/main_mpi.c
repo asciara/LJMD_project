@@ -10,6 +10,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
+#include <sys/time.h>
+#include <time.h>
 
 #if defined (_OPENMP)
 #include <omp.h>
@@ -18,10 +20,20 @@
 #include "data.h"
 #include "prototypes.h"
 
+double seconds(){
+
+    struct timeval tmp;
+    double sec;
+    gettimeofday( &tmp, (struct timezone *)0 );
+    sec = tmp.tv_sec + ((double)tmp.tv_usec)/1000000.0;
+    return sec;
+}
+
 /* main */
 int main(int argc, char **argv) 
 {
     int nprint, i;
+    double t, t_tmp, t_max;
     char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
     FILE *fp,*traj,*erg;
     mdsys_t sys;
@@ -160,23 +172,38 @@ int main(int argc, char **argv)
 
     /**************************************************/
     /* main MD loop */
+    
+    t = 0.0;
+    
     for(sys.nfi=1; sys.nfi <= sys.nsteps; ++sys.nfi) {
 
         /* write output, if requested */
         if ((sys.nfi % nprint) == 0 && sys.mpirank==0)
             output(&sys, erg, traj);
-
+        
+        t_tmp = seconds();
+        
         /* propagate system and recompute energies */
         if (sys.mpirank==0)
 		velverlet_first(&sys);
 
-	force(&sys);
+	    force(&sys);
 
         if (sys.mpirank==0){
 		velverlet_second(&sys);
-        	ekin(&sys);
-	}
+        	ekin(&sys);    
+	    }
+	    
+	    t += seconds() - t_tmp;
     }
+    
+    
+    printf("Time process %d: %.6f\n", sys.mpirank, t);
+    MPI_Reduce( &t, &t_max, 1, MPI_DOUBLE, MPI_MAX, 0, sys.mpicomm );
+    if(sys.mpirank==0){
+        printf("Evolve time: %.6f\n", t_max);
+    }
+    
     /**************************************************/
 
     /* clean up: close files, free memory */
