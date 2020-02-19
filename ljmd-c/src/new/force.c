@@ -64,7 +64,6 @@ void force(mdsys_t *sys)
 #else
        int tid=0;
 #endif 
-       int global_id = tid * sys->natoms;
        f = F + (3 * tid * sys->natoms);
        azzero(f, 3 * sys->natoms);  
 
