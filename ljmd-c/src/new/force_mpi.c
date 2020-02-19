@@ -31,6 +31,7 @@ void force(mdsys_t *sys)
     rcsq = sys->rcut * sys->rcut;
     half_box = 0.5*sys->box;
 
+
     // rank 0 broadcasts all updated positions to other ranks
     MPI_Bcast(sys->rx,sys->natoms,MPI_DOUBLE,0,sys->mpicomm);
     MPI_Bcast(sys->ry,sys->natoms,MPI_DOUBLE,0,sys->mpicomm);
@@ -78,42 +79,46 @@ void force(mdsys_t *sys)
        for(i=sys->mpirank; i < sys->natoms -1 ; i+=sys->nprocs) {
        if(((i-sys->mpirank)/sys->nprocs)%sys->nthreads!=tid) continue;
         
-       // divide work among threads
         
-          for(int j= i+1 ; j < (sys->natoms); ++j) {
-              /* get distance between particle i and j */
-              int ii = 3 * i;
-              int jj = 3* j;
-              /* get distance between particle i and j */
-              r[0]=pbc( R[ ii ] - R[ jj ], half_box);
-              r[1]=pbc(R[ ii + 1 ] - R[ jj + 1 ], half_box);
-              r[2]=pbc(R[ ii + 2 ] - R[ jj + 2 ], half_box);
-              rsq = r[0]*r[0] + r[1]*r[1] + r[2]*r[2];
+         for(int j= i+1 ; j < (sys->natoms); ++j) {
+             
+             /* get distance between particle i and j */
+             int ii = 3 * i;
+             int jj = 3* j;
+             
+             /* get distance between particle i and j */
+             r[0]=pbc( R[ ii ] - R[ jj ], half_box);
+             r[1]=pbc(R[ ii + 1 ] - R[ jj + 1 ], half_box);
+             r[2]=pbc(R[ ii + 2 ] - R[ jj + 2 ], half_box);
+             rsq = r[0]*r[0] + r[1]*r[1] + r[2]*r[2];
                
+
             /* compute force and energy if within cutoff */
-            if (rsq<rcsq) {
-		        double r6,rinv;
-		        rinv=1.0/rsq;
-                r6 = rinv * rinv * rinv;
+           if (rsq<rcsq) {
+		       
+		       double r6,rinv;
+		       rinv=1.0/rsq;
+               
+               r6 = rinv * rinv * rinv;
                 
-                ffac = (12.0 * c12 * r6 -6.0*c6) * r6 *rinv;
-                epot_priv += r6 *(c12*r6 -c6);
+               ffac = (12.0 * c12 * r6 -6.0*c6) * r6 *rinv;
+               epot_priv += r6 *(c12*r6 -c6);
                
                
 		//The c array contains, for every particle in the box, the sum of force contributions coming from particles in a given rank. We need to perform a reduction (MPI_Reduce) to sum the 
 		//contributions coming from all ranks.
 		        
-                
-                c[ ii ] += r[0]*ffac;
-           	    c[ ii + 1 ] += r[1]*ffac;
-           	    c[ ii + 2 ] += r[2]*ffac;
-           	    c[ jj ] -= r[0]*ffac;
-           	    c[ jj + 1 ] -= r[1]*ffac;
-           	    c[ jj + 2 ] -= r[2]*ffac;
+      
+               c[ ii ] += r[0]*ffac;
+           	   c[ ii + 1 ] += r[1]*ffac;
+           	   c[ ii + 2 ] += r[2]*ffac;
+           	   c[ jj ] -= r[0]*ffac;
+           	   c[ jj + 1 ] -= r[1]*ffac;
+           	   c[ jj + 2 ] -= r[2]*ffac;
            	                    
-	        }
+	       }   
 	     }   
-       }
+       }  
        epot += epot_priv;  // omp reduction of epot
 #if defined (_OPENMP)
 #pragma omp barrier
