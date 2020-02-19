@@ -23,7 +23,6 @@ ifdef debug
 CFLAGS=-O0 -pg -g  $(FOPENMP) $(FPERF)
 else
 CFLAGS=-Wall -O3 -ffast-math -mavx2 $(FOPENMP) $(FPERF) 
-#-march=native -mavx2
 endif
 
 LDLIBS=-lm
