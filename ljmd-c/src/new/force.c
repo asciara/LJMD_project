@@ -40,8 +40,6 @@ void force(mdsys_t *sys)
         R[ ii + 2 ] = sys->rz[i];   
     }
     
-    // adding
-    
     double * F;  
     
     F=(double *)malloc(3*sys->nthreads*sys->natoms*sizeof(double));

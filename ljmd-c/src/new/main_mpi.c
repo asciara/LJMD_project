@@ -10,6 +10,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
+#include <sys/time.h>
+#include <time.h>
 
 #if defined (_OPENMP)
 #include <omp.h>
